@@ -1,24 +1,78 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Libria — em construção" },
+      {
+        name: "description",
+        content:
+          "Libria: controle sua coleção de livros, jogos e mídias. Posse, leitura, empréstimos e ranking social.",
+      },
+      { property: "og:title", content: "Libria — em construção" },
+      {
+        property: "og:description",
+        content:
+          "Controle sua coleção de livros, jogos e mídias. Posse, leitura, empréstimos e ranking social.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <main className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-6 text-center">
+      {/* Soft ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-1/4 left-1/2 h-[60vh] w-[120vw] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle at center, var(--accent) 0%, transparent 65%)",
+        }}
       />
-    </div>
+
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Emblem: stacked spines */}
+        <div className="mb-8 flex items-end gap-1.5" aria-hidden>
+          <span className="block h-16 w-2.5 rounded-sm bg-primary/70" />
+          <span className="block h-20 w-2.5 rounded-sm bg-primary" />
+          <span className="block h-14 w-2.5 rounded-sm bg-primary/55" />
+          <span className="block h-24 w-2.5 rounded-sm bg-primary/85" />
+          <span className="block h-12 w-2.5 rounded-sm bg-primary/45" />
+        </div>
+
+        <h1
+          className="font-serif text-6xl leading-none text-foreground sm:text-7xl"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          Libria
+        </h1>
+
+        <p className="mt-3 text-sm font-medium uppercase tracking-[0.25em] text-muted-foreground">
+          em construção
+        </p>
+
+        <p className="mt-8 max-w-xs text-balance text-base leading-relaxed text-muted-foreground">
+          Seu acervo de livros, jogos e mídias — posse, leitura, empréstimos e
+          ranking entre colecionadores.
+        </p>
+
+        <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-medium text-muted-foreground backdrop-blur">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+          </span>
+          Conectando o acervo…
+        </div>
+      </div>
+
+      <footer className="absolute bottom-0 z-10 w-full px-6 pb-6 text-center text-xs text-muted-foreground/70">
+        Libria · {new Date().getFullYear()}
+      </footer>
+    </main>
   );
 }
