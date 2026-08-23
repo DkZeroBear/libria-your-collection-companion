@@ -20,10 +20,7 @@ export const Route = createFileRoute("/_authenticated/inicio")({
 
 function InicioPage() {
   const navigate = useNavigate();
-  const { queryClient } = Route.useRouteContext();
-  const { user } = Route.useRouteContext() as unknown as {
-    user: { id: string; email?: string };
-  };
+  const { queryClient, user } = Route.useRouteContext();
   const [perfil, setPerfil] = useState<UsuarioPerfil | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [saindo, setSaindo] = useState(false);
