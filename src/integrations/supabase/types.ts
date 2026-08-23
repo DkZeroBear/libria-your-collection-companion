@@ -133,6 +133,44 @@ export type Database = {
           },
         ]
       }
+      feedback_produto: {
+        Row: {
+          created_at: string
+          descricao: string
+          id: string
+          status: string
+          tipo: string
+          titulo: string
+          usuario_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          id?: string
+          status?: string
+          tipo: string
+          titulo: string
+          usuario_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_produto_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fontes: {
         Row: {
           capa_url: string | null
