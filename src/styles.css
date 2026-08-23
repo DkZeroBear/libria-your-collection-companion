@@ -110,39 +110,58 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/*
+ * Tema escuro "Nocturne".
+ * Fundo azul-tinta profundo, superfícies #232532, texto #e9e9ed e um
+ * único acento violeta (#9184d9) usado como contorno/linha — nunca como
+ * preenchimento sólido de ação (botões primários viram outline, ver o
+ * bloco de overrides no fim do arquivo). Tipografia Inter, raio 8px.
+ */
 .dark {
-  --background: oklch(0.2 0.02 50);
-  --foreground: oklch(0.93 0.015 82);
-  --card: oklch(0.25 0.025 50);
-  --card-foreground: oklch(0.93 0.015 82);
-  --popover: oklch(0.25 0.025 50);
-  --popover-foreground: oklch(0.93 0.015 82);
-  --primary: oklch(0.7 0.14 50);
-  --primary-foreground: oklch(0.2 0.02 50);
-  --secondary: oklch(0.3 0.03 55);
-  --secondary-foreground: oklch(0.93 0.015 82);
-  --muted: oklch(0.3 0.025 55);
-  --muted-foreground: oklch(0.7 0.02 75);
-  --accent: oklch(0.35 0.05 45);
-  --accent-foreground: oklch(0.95 0.01 82);
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.95 0.01 82);
-  --border: oklch(0.35 0.02 55 / 60%);
-  --input: oklch(0.35 0.02 55 / 60%);
-  --ring: oklch(0.7 0.14 50);
-  --chart-1: oklch(0.7 0.14 50);
-  --chart-2: oklch(0.6 0.12 160);
-  --chart-3: oklch(0.55 0.1 250);
-  --chart-4: oklch(0.75 0.15 90);
-  --chart-5: oklch(0.65 0.2 15);
-  --sidebar: oklch(0.25 0.025 50);
-  --sidebar-foreground: oklch(0.93 0.015 82);
-  --sidebar-primary: oklch(0.7 0.14 50);
-  --sidebar-primary-foreground: oklch(0.2 0.02 50);
-  --sidebar-accent: oklch(0.35 0.05 45);
-  --sidebar-accent-foreground: oklch(0.95 0.01 82);
-  --sidebar-border: oklch(0.35 0.02 55 / 60%);
-  --sidebar-ring: oklch(0.7 0.14 50);
+  --radius: 0.5rem;
+
+  --background: #161826;
+  --foreground: #e9e9ed;
+
+  --card: #232532;
+  --card-foreground: #e9e9ed;
+  --popover: #232532;
+  --popover-foreground: #e9e9ed;
+
+  --primary: #9184d9;
+  --primary-foreground: #161826;
+
+  --secondary: #232532;
+  --secondary-foreground: #e9e9ed;
+  --muted: #1c1e2c;
+  --muted-foreground: #9a9cb0;
+  --accent: #232532;
+  --accent-foreground: #e9e9ed;
+
+  --destructive: #b4656d;
+  --destructive-foreground: #e9e9ed;
+
+  --border: #9184d92e;
+  --input: #9184d94d;
+  --ring: #9184d9;
+
+  --chart-1: #9184d9;
+  --chart-2: #6f9dc0;
+  --chart-3: #7fbf9e;
+  --chart-4: #c9a86a;
+  --chart-5: #b4656d;
+
+  --sidebar: #1c1e2c;
+  --sidebar-foreground: #e9e9ed;
+  --sidebar-primary: #9184d9;
+  --sidebar-primary-foreground: #161826;
+  --sidebar-accent: #232532;
+  --sidebar-accent-foreground: #e9e9ed;
+  --sidebar-border: #9184d92e;
+  --sidebar-ring: #9184d9;
+
+  /* Nocturne usa Inter em tudo; peso dos títulos ajustado no fim do arquivo */
+  --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -155,4 +174,30 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
+}
+
+/*
+ * Overrides Nocturne (fora de camadas, para vencer as utilities):
+ * - botões primários são outline no acento violeta, sem preenchimento;
+ * - títulos usam Inter peso 500 (a família já vem de --font-serif).
+ */
+.dark [data-slot="button"].bg-primary,
+.dark a.bg-primary {
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: none;
+}
+
+.dark [data-slot="button"].bg-primary:hover:not(:disabled),
+.dark a.bg-primary:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark .font-serif {
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }

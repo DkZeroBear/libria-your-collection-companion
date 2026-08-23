@@ -70,7 +70,12 @@ function AuthPage() {
   useEffect(() => {
     let ativo = true;
     supabase.auth.getUser().then(({ data }) => {
-      if (ativo && data.user) navigate({ to: "/inicio", replace: true });
+      if (ativo && data.user)
+        navigate({
+          to: "/inicio",
+          search: { visao: "colecoes", filtro: "todos" },
+          replace: true,
+        });
     });
     return () => {
       ativo = false;
@@ -89,7 +94,10 @@ function AuthPage() {
           password: senha,
         });
         if (error) throw error;
-        navigate({ to: "/inicio" });
+        navigate({
+          to: "/inicio",
+          search: { visao: "colecoes", filtro: "todos" },
+        });
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -98,7 +106,10 @@ function AuthPage() {
         });
         if (error) throw error;
         if (data.session) {
-          navigate({ to: "/inicio" });
+          navigate({
+            to: "/inicio",
+            search: { visao: "colecoes", filtro: "todos" },
+          });
         } else {
           // Confirmação de email habilitada: perfil é criado no primeiro login.
           setAguardandoConfirmacao(true);
