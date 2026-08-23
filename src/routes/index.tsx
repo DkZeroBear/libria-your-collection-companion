@@ -1,4 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,6 +27,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  // Sessão vive no localStorage: lê só no cliente para não quebrar a hidratação.
+  const [logado, setLogado] = useState(false);
+  useEffect(() => {
+    let ativo = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (ativo) setLogado(Boolean(data.session));
+    });
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
   return (
     <main className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-6 text-center">
       {/* Soft ambient glow */}
@@ -61,12 +77,21 @@ function Index() {
           ranking entre colecionadores.
         </p>
 
-        <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-medium text-muted-foreground backdrop-blur">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-          </span>
-          Conectando o acervo…
+        <div className="mt-10 flex flex-col items-center gap-4">
+          <Link
+            to={logado ? "/inicio" : "/auth"}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          >
+            {logado ? "Continuar para o acervo" : "Entrar ou criar conta"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-medium text-muted-foreground backdrop-blur">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            Conectando o acervo…
+          </div>
         </div>
       </div>
 
