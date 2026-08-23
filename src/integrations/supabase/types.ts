@@ -14,16 +14,443 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      denuncias: {
+        Row: {
+          created_at: string
+          denunciado_por: string
+          fonte_id: string | null
+          id: string
+          motivo: string
+          status: string
+          titulo_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          denunciado_por: string
+          fonte_id?: string | null
+          id?: string
+          motivo: string
+          status?: string
+          titulo_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          denunciado_por?: string
+          fonte_id?: string | null
+          id?: string
+          motivo?: string
+          status?: string
+          titulo_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "denuncias_denunciado_por_fkey"
+            columns: ["denunciado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "denuncias_fonte_id_fkey"
+            columns: ["fonte_id"]
+            isOneToOne: false
+            referencedRelation: "fontes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "denuncias_titulo_id_fkey"
+            columns: ["titulo_id"]
+            isOneToOne: false
+            referencedRelation: "titulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emprestimos: {
+        Row: {
+          canal_cobranca: string | null
+          created_at: string
+          data_devolucao_prevista: string | null
+          data_devolucao_real: string | null
+          data_emprestimo: string
+          devolvido: boolean
+          dono_id: string
+          id: string
+          pego_por_nome: string
+          pego_por_usuario_id: string | null
+          titulo_id: string
+          ultima_cobranca_em: string | null
+        }
+        Insert: {
+          canal_cobranca?: string | null
+          created_at?: string
+          data_devolucao_prevista?: string | null
+          data_devolucao_real?: string | null
+          data_emprestimo?: string
+          devolvido?: boolean
+          dono_id: string
+          id?: string
+          pego_por_nome: string
+          pego_por_usuario_id?: string | null
+          titulo_id: string
+          ultima_cobranca_em?: string | null
+        }
+        Update: {
+          canal_cobranca?: string | null
+          created_at?: string
+          data_devolucao_prevista?: string | null
+          data_devolucao_real?: string | null
+          data_emprestimo?: string
+          devolvido?: boolean
+          dono_id?: string
+          id?: string
+          pego_por_nome?: string
+          pego_por_usuario_id?: string | null
+          titulo_id?: string
+          ultima_cobranca_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emprestimos_dono_id_fkey"
+            columns: ["dono_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emprestimos_pego_por_usuario_id_fkey"
+            columns: ["pego_por_usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emprestimos_titulo_id_fkey"
+            columns: ["titulo_id"]
+            isOneToOne: false
+            referencedRelation: "titulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fontes: {
+        Row: {
+          capa_url: string | null
+          created_at: string
+          criado_por: string
+          descricao: string | null
+          id: string
+          nome: string
+          status_curadoria: string
+          tipo_midia_id: string
+          total_titulos_oficial: number | null
+        }
+        Insert: {
+          capa_url?: string | null
+          created_at?: string
+          criado_por: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          status_curadoria?: string
+          tipo_midia_id: string
+          total_titulos_oficial?: number | null
+        }
+        Update: {
+          capa_url?: string | null
+          created_at?: string
+          criado_por?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          status_curadoria?: string
+          tipo_midia_id?: string
+          total_titulos_oficial?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fontes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fontes_tipo_midia_id_fkey"
+            columns: ["tipo_midia_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_midia"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posse: {
+        Row: {
+          id: string
+          lido: boolean
+          quero: boolean
+          tenho: boolean
+          titulo_id: string
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          id?: string
+          lido?: boolean
+          quero?: boolean
+          tenho?: boolean
+          titulo_id: string
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          id?: string
+          lido?: boolean
+          quero?: boolean
+          tenho?: boolean
+          titulo_id?: string
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posse_titulo_id_fkey"
+            columns: ["titulo_id"]
+            isOneToOne: false
+            referencedRelation: "titulos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posse_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sugestoes: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          revisado_em: string | null
+          revisado_por: string | null
+          status: string
+          sugerido_por: string
+          tipo_sugestao: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: string
+          sugerido_por: string
+          tipo_sugestao: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: string
+          sugerido_por?: string
+          tipo_sugestao?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sugestoes_revisado_por_fkey"
+            columns: ["revisado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sugestoes_sugerido_por_fkey"
+            columns: ["sugerido_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tipos_midia: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          icone: string
+          id: string
+          nome: string
+          nome_exibicao: string
+          schema_campos: Json
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          icone?: string
+          id?: string
+          nome: string
+          nome_exibicao: string
+          schema_campos?: Json
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          icone?: string
+          id?: string
+          nome?: string
+          nome_exibicao?: string
+          schema_campos?: Json
+        }
+        Relationships: []
+      }
+      titulos: {
+        Row: {
+          capa_url: string | null
+          created_at: string
+          criado_por: string
+          fonte_id: string | null
+          fonte_validacao: string
+          id: string
+          identificador_externo: string | null
+          metadados: Json
+          status_curadoria: string
+          tipo_midia_id: string
+          titulo: string
+        }
+        Insert: {
+          capa_url?: string | null
+          created_at?: string
+          criado_por: string
+          fonte_id?: string | null
+          fonte_validacao?: string
+          id?: string
+          identificador_externo?: string | null
+          metadados?: Json
+          status_curadoria?: string
+          tipo_midia_id: string
+          titulo: string
+        }
+        Update: {
+          capa_url?: string | null
+          created_at?: string
+          criado_por?: string
+          fonte_id?: string | null
+          fonte_validacao?: string
+          id?: string
+          identificador_externo?: string | null
+          metadados?: Json
+          status_curadoria?: string
+          tipo_midia_id?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "titulos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "titulos_fonte_id_fkey"
+            columns: ["fonte_id"]
+            isOneToOne: false
+            referencedRelation: "fontes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "titulos_tipo_midia_id_fkey"
+            columns: ["tipo_midia_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_midia"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usuarios: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          colecionador_desde: string
+          created_at: string
+          id: string
+          nome_exibicao: string
+          perfil_publico: boolean
+          reputacao: number
+          telegram_chat_id: string | null
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          colecionador_desde?: string
+          created_at?: string
+          id: string
+          nome_exibicao: string
+          perfil_publico?: boolean
+          reputacao?: number
+          telegram_chat_id?: string | null
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          colecionador_desde?: string
+          created_at?: string
+          id?: string
+          nome_exibicao?: string
+          perfil_publico?: boolean
+          reputacao?: number
+          telegram_chat_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "moderador"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +577,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["moderador"],
+    },
   },
 } as const
