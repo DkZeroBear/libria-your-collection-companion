@@ -38,12 +38,14 @@ export async function ensureUsuario(user: User): Promise<UsuarioPerfil> {
 
   const base = deriveUsername(user.email);
   const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const fullName = metadata["full_name"];
+  const name = metadata["name"];
+  const avatar = metadata["avatar_url"];
   const nomeExibicao =
-    (typeof metadata.full_name === "string" && metadata.full_name) ||
-    (typeof metadata.name === "string" && metadata.name) ||
+    (typeof fullName === "string" && fullName) ||
+    (typeof name === "string" && name) ||
     base;
-  const avatarUrl =
-    typeof metadata.avatar_url === "string" ? metadata.avatar_url : null;
+  const avatarUrl = typeof avatar === "string" ? avatar : null;
 
   // Username é unique: em caso de colisão, tenta com sufixo aleatório.
   for (let attempt = 0; attempt < 5; attempt++) {
