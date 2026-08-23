@@ -68,6 +68,16 @@ export async function ensureUsuario(user: User): Promise<UsuarioPerfil> {
 
     if (!error) return data;
     if (error.code !== "23505") throw error;
+
+    // Conflito pode ser corrida de outra chamada que já criou o perfil
+    // (PK id) — nesse caso, apenas devolve a linha existente.
+    const { data: corrida } = await supabase
+      .from("usuarios")
+      .select("id, username, nome_exibicao, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (corrida) return corrida;
+    // Senão, foi colisão de username: tenta de novo com sufixo.
   }
 
   throw new Error("Não foi possível criar seu perfil. Tente novamente.");
