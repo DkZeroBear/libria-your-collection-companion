@@ -191,17 +191,11 @@ function InicioPage() {
   }
 
   function setVisao(nova: Visao) {
-    navigate({
-      to: "/inicio",
-      search: (prev) => ({ ...prev, visao: nova }),
-    });
+    navigate({ to: "/inicio", search: { visao: nova, filtro } });
   }
 
   function setFiltro(novo: Filtro) {
-    navigate({
-      to: "/inicio",
-      search: (prev) => ({ ...prev, filtro: novo }),
-    });
+    navigate({ to: "/inicio", search: { visao, filtro: novo } });
   }
 
   const iniciais = perfil.nome_exibicao
@@ -459,7 +453,7 @@ function TituloCard({
   posse,
 }: {
   titulo: TituloColecao;
-  posse?: PosseColecao;
+  posse?: PosseColecao | undefined;
 }) {
   const autor = titulo.metadados?.autor;
   return (
