@@ -66,7 +66,12 @@ export async function ensureUsuario(user: User): Promise<UsuarioPerfil> {
       .select("id, username, nome_exibicao, avatar_url")
       .single();
 
-    if (!error) return data;
+    if (!error) {
+      await supabase
+        .from("usuarios_telegram")
+        .insert({ usuario_id: user.id });
+      return data;
+    }
     if (error.code !== "23505") throw error;
 
     // Conflito pode ser corrida de outra chamada que já criou o perfil
