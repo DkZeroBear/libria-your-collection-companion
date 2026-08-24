@@ -19,8 +19,7 @@ export const Route = createFileRoute("/auth")({
       { property: "og:title", content: "Entrar — Libria" },
       {
         property: "og:description",
-        content:
-          "Acesse o Libria para controlar sua coleção de livros, jogos e mídias.",
+        content: "Acesse o Libria para controlar sua coleção de livros, jogos e mídias.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -143,13 +142,11 @@ function AuthPage() {
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
             <MailCheck className="h-6 w-6" />
           </span>
-          <h1 className="mt-6 font-serif text-3xl text-foreground">
-            Confira seu email
-          </h1>
+          <h1 className="mt-6 font-serif text-3xl text-foreground">Confira seu email</h1>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
             Enviamos um link de confirmação para{" "}
-            <span className="font-medium text-foreground">{email}</span>. Clique
-            nele para ativar sua conta e depois entre aqui.
+            <span className="font-medium text-foreground">{email}</span>. Clique nele para ativar
+            sua conta e depois entre aqui.
           </p>
           <Button
             variant="outline"
@@ -220,9 +217,7 @@ function AuthPage() {
             type="password"
             required
             minLength={6}
-            autoComplete={
-              modo === "entrar" ? "current-password" : "new-password"
-            }
+            autoComplete={modo === "entrar" ? "current-password" : "new-password"}
             placeholder="Mínimo de 6 caracteres"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
@@ -269,8 +264,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
         aria-hidden
         className="pointer-events-none absolute -top-1/4 left-1/2 h-[60vh] w-[120vw] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
         style={{
-          background:
-            "radial-gradient(circle at center, var(--accent) 0%, transparent 65%)",
+          background: "radial-gradient(circle at center, var(--accent) 0%, transparent 65%)",
         }}
       />
       <div className="relative z-10 w-full max-w-sm">
@@ -278,9 +272,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <BookOpenText className="h-5 w-5" />
           </span>
-          <span className="mt-3 font-serif text-xl text-foreground">
-            Libria
-          </span>
+          <span className="mt-3 font-serif text-xl text-foreground">Libria</span>
         </div>
         <div className="rounded-2xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur sm:p-8">
           {children}
@@ -291,14 +283,11 @@ function AuthShell({ children }: { children: React.ReactNode }) {
 }
 
 function traduzErro(error: unknown): string {
-  const message =
-    error instanceof Error ? error.message : "Erro inesperado. Tente novamente.";
-  if (message.includes("Invalid login credentials"))
-    return "Email ou senha incorretos.";
+  const message = error instanceof Error ? error.message : "Erro inesperado. Tente novamente.";
+  if (message.includes("Invalid login credentials")) return "Email ou senha incorretos.";
   if (message.includes("User already registered"))
     return "Este email já tem uma conta. Tente entrar.";
-  if (message.includes("Password should be"))
-    return "A senha precisa ter pelo menos 6 caracteres.";
+  if (message.includes("Password should be")) return "A senha precisa ter pelo menos 6 caracteres.";
   if (message.includes("Unable to validate email"))
     return "Email inválido. Confira e tente novamente.";
   if (message.includes("provider is not enabled"))

@@ -42,17 +42,12 @@ export async function ensureUsuario(user: User): Promise<UsuarioPerfil> {
   const name = metadata["name"];
   const avatar = metadata["avatar_url"];
   const nomeExibicao =
-    (typeof fullName === "string" && fullName) ||
-    (typeof name === "string" && name) ||
-    base;
+    (typeof fullName === "string" && fullName) || (typeof name === "string" && name) || base;
   const avatarUrl = typeof avatar === "string" ? avatar : null;
 
   // Username é unique: em caso de colisão, tenta com sufixo aleatório.
   for (let attempt = 0; attempt < 5; attempt++) {
-    const username =
-      attempt === 0
-        ? base
-        : `${base}_${Math.random().toString(36).slice(2, 6)}`;
+    const username = attempt === 0 ? base : `${base}_${Math.random().toString(36).slice(2, 6)}`;
 
     const { data, error } = await supabase
       .from("usuarios")
@@ -67,9 +62,7 @@ export async function ensureUsuario(user: User): Promise<UsuarioPerfil> {
       .single();
 
     if (!error) {
-      await supabase
-        .from("usuarios_telegram")
-        .insert({ usuario_id: user.id });
+      await supabase.from("usuarios_telegram").insert({ usuario_id: user.id });
       return data;
     }
     if (error.code !== "23505") throw error;

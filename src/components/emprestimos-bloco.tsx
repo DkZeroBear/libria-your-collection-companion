@@ -45,8 +45,7 @@ export function EmprestimosBloco({
     const doEstado = bloqueios[e.id];
     if (doEstado && new Date(doEstado).getTime() > Date.now()) return doEstado;
     if (e.ultima_cobranca_em) {
-      const proxima =
-        new Date(e.ultima_cobranca_em).getTime() + 4 * 60 * 60 * 1000;
+      const proxima = new Date(e.ultima_cobranca_em).getTime() + 4 * 60 * 60 * 1000;
       if (proxima > Date.now()) return new Date(proxima).toISOString();
     }
     return null;
@@ -75,9 +74,7 @@ export function EmprestimosBloco({
     try {
       const resultado = await cobrar({ data: { emprestimoId: id } });
       if (resultado.status === "sem_telegram") {
-        toast.info(
-          "Conecte seu Telegram em Configurações para receber os lembretes.",
-        );
+        toast.info("Conecte seu Telegram em Configurações para receber os lembretes.");
         return;
       }
       if (resultado.status === "aguarde") {
@@ -90,9 +87,7 @@ export function EmprestimosBloco({
       toast.success("Lembrete enviado no seu Telegram.");
       onMudanca();
     } catch (erro) {
-      toast.error(
-        erro instanceof Error ? erro.message : "Não foi possível cobrar agora.",
-      );
+      toast.error(erro instanceof Error ? erro.message : "Não foi possível cobrar agora.");
     } finally {
       setOcupado(null);
     }
@@ -121,16 +116,11 @@ export function EmprestimosBloco({
             const dias = diasDesde(e.data_emprestimo);
             const bloqueadoAte = proximaCobranca(e);
             return (
-              <li
-                key={e.id}
-                className="rounded-lg border border-border bg-card px-4 py-3 text-sm"
-              >
+              <li key={e.id} className="rounded-lg border border-border bg-card px-4 py-3 text-sm">
                 <div className="min-w-0">
                   <p className="truncate">
                     {e.titulos?.titulo ?? "Título"}{" "}
-                    <span className="text-muted-foreground">
-                      com {e.pego_por_nome}
-                    </span>
+                    <span className="text-muted-foreground">com {e.pego_por_nome}</span>
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     há {dias} {dias === 1 ? "dia" : "dias"}
@@ -162,9 +152,7 @@ export function EmprestimosBloco({
                     className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
                   >
                     <BellRinging size={14} />
-                    {bloqueadoAte
-                      ? `Cobrar a partir de ${formatarHora(bloqueadoAte)}`
-                      : "Cobrar"}
+                    {bloqueadoAte ? `Cobrar a partir de ${formatarHora(bloqueadoAte)}` : "Cobrar"}
                   </button>
                 </div>
               </li>

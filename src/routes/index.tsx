@@ -46,8 +46,7 @@ function Index() {
         aria-hidden
         className="pointer-events-none absolute -top-1/4 left-1/2 h-[60vh] w-[120vw] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
         style={{
-          background:
-            "radial-gradient(circle at center, var(--accent) 0%, transparent 65%)",
+          background: "radial-gradient(circle at center, var(--accent) 0%, transparent 65%)",
         }}
       />
 
@@ -73,8 +72,8 @@ function Index() {
         </p>
 
         <p className="mt-8 max-w-xs text-balance text-base leading-relaxed text-muted-foreground">
-          Seu acervo de livros, jogos e mídias — posse, leitura, empréstimos e
-          ranking entre colecionadores.
+          Seu acervo de livros, jogos e mídias — posse, leitura, empréstimos e ranking entre
+          colecionadores.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4">

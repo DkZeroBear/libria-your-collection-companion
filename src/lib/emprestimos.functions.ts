@@ -38,8 +38,7 @@ export const cobrarEmprestimo = createServerFn({ method: "POST" })
     if (emprestimo.devolvido) throw new Error("Este empréstimo já foi devolvido.");
 
     if (emprestimo.ultima_cobranca_em) {
-      const proxima =
-        new Date(emprestimo.ultima_cobranca_em).getTime() + COOLDOWN_MS;
+      const proxima = new Date(emprestimo.ultima_cobranca_em).getTime() + COOLDOWN_MS;
       if (Date.now() < proxima) {
         return {
           status: "aguarde",
@@ -57,9 +56,8 @@ export const cobrarEmprestimo = createServerFn({ method: "POST" })
     if (erroPerfil) throw erroPerfil;
     if (!perfil?.telegram_chat_id) return { status: "sem_telegram" };
 
-    const { enviarMensagemTelegram, diasDesde, formatarDataBr } = await import(
-      "@/lib/telegram.server"
-    );
+    const { enviarMensagemTelegram, diasDesde, formatarDataBr } =
+      await import("@/lib/telegram.server");
 
     const tituloRel = emprestimo.titulos as unknown as { titulo: string } | null;
     const nomeTitulo = tituloRel?.titulo ?? "um item da sua coleção";
