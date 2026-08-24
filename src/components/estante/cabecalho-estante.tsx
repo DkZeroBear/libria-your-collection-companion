@@ -36,6 +36,15 @@ export function CabecalhoEstante({
             <Plus size={14} />
             Sugerir item
           </Link>
+          {ehModerador && (
+            <Link
+              to="/curadoria"
+              aria-label="Curadoria"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              <ShieldCheck size={16} />
+            </Link>
+          )}
           <Link
             to="/configuracoes"
             aria-label="Configurações"
