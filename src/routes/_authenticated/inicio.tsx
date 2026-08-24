@@ -31,7 +31,11 @@ interface TituloColecao {
   capa_url: string | null;
   metadados: { autor?: string; editora?: string; ano?: string | number } | null;
   fonte_id: string | null;
-  fontes: { id: string; nome: string } | null;
+  fontes: {
+    id: string;
+    nome: string;
+    total_titulos_oficial: number | null;
+  } | null;
 }
 
 interface PosseColecao {
@@ -59,7 +63,9 @@ async function fetchColecao(usuarioId: string): Promise<ColecaoDados> {
   const [titulosRes, possesRes, emprestimosRes] = await Promise.all([
     supabase
       .from("titulos")
-      .select("id, titulo, capa_url, metadados, fonte_id, fontes(id, nome)")
+      .select(
+        "id, titulo, capa_url, metadados, fonte_id, fontes(id, nome, total_titulos_oficial)",
+      )
       .eq("status_curadoria", "aprovado")
       .order("titulo"),
     supabase
@@ -152,11 +158,15 @@ function InicioPage() {
   );
 
   const grupos = useMemo(() => {
-    const mapa = new Map<string, { nome: string; itens: TituloColecao[] }>();
+    const mapa = new Map<
+      string,
+      { nome: string; totalOficial: number | null; itens: TituloColecao[] }
+    >();
     for (const t of data.titulos) {
       const chave = t.fontes?.id ?? "avulsos";
       const grupo = mapa.get(chave) ?? {
         nome: t.fontes?.nome ?? "Avulsos",
+        totalOficial: t.fontes?.total_titulos_oficial ?? null,
         itens: [],
       };
       grupo.itens.push(t);
@@ -247,7 +257,7 @@ function InicioPage() {
       <div className="mx-auto max-w-2xl space-y-8 px-4 pt-6">
         <section>
           <h1 className="font-serif text-2xl leading-tight">
-            Acervo de {perfil.nome_exibicao}
+            Minha estante
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             @{perfil.username}
@@ -294,7 +304,11 @@ function InicioPage() {
               <EstadoVazio mensagem="Nenhum título aprovado no catálogo ainda." />
             )}
             {grupos.map((grupo) => {
-              const total = grupo.itens.length;
+              // Categoria aberta por padrão: só coleções com total oficial
+              // declarado exibem completude.
+              const fechada =
+                typeof grupo.totalOficial === "number" && grupo.totalOficial > 0;
+              const total = fechada ? grupo.totalOficial! : grupo.itens.length;
               const tenho = grupo.itens.filter(
                 (t) => posseMap.get(t.id)?.tenho,
               ).length;
@@ -302,24 +316,34 @@ function InicioPage() {
               return (
                 <div key={grupo.nome}>
                   <div className="flex items-baseline justify-between gap-3">
-                    <h2 className="font-serif text-lg">{grupo.nome}</h2>
+                    {fechada ? (
+                      <h2 className="font-serif text-lg">{grupo.nome}</h2>
+                    ) : (
+                      <h2 className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+                        {grupo.nome}
+                      </h2>
+                    )}
                     <span className="text-xs text-muted-foreground">
-                      {tenho} de {total} · {pct}%
+                      {fechada
+                        ? `${tenho} de ${total} · ${pct}%`
+                        : `${grupo.itens.length} ${grupo.itens.length === 1 ? "título" : "títulos"}`}
                     </span>
                   </div>
-                  <div
-                    className="mt-2 h-1 overflow-hidden rounded-full border border-border"
-                    role="progressbar"
-                    aria-valuenow={pct}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Completude de ${grupo.nome}`}
-                  >
+                  {fechada && (
                     <div
-                      className="h-full bg-primary transition-all"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
+                      className="mt-2 h-1 overflow-hidden rounded-full border border-border"
+                      role="progressbar"
+                      aria-valuenow={pct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Completude de ${grupo.nome}`}
+                    >
+                      <div
+                        className="h-full bg-primary transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  )}
                   <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {grupo.itens.map((t) => (
                       <TituloCard
