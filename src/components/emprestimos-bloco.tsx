@@ -80,6 +80,13 @@ export function EmprestimosBloco({
         );
         return;
       }
+      if (resultado.status === "aguarde") {
+        setBloqueios((b) => ({ ...b, [id]: resultado.proximaCobrancaEm }));
+        toast.info(
+          `Você já cobrou há pouco. Próxima cobrança a partir de ${formatarHora(resultado.proximaCobrancaEm)}.`,
+        );
+        return;
+      }
       toast.success("Lembrete enviado no seu Telegram.");
       onMudanca();
     } catch (erro) {
