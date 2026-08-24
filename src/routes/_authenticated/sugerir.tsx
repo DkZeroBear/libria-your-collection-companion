@@ -89,7 +89,9 @@ function SugerirPage() {
   const tipoLivro = data.tipos.find((t) => t.nome === "livro") ?? data.tipos[0];
 
   const [modo, setModo] = useState<Modo>("titulo");
+  const [emLote, setEmLote] = useState(false);
   const [enviando, setEnviando] = useState(false);
+
 
   // Título
   const [isbn, setIsbn] = useState("");
