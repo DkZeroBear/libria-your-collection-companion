@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Books,
+  Gear,
   Heart,
   Package,
   SignOut,
-  Tray,
 } from "@phosphor-icons/react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,11 @@ import { ensureUsuario } from "@/lib/ensure-usuario";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { FeedbackDialog } from "@/components/feedback-dialog";
+import { EmprestarDialog } from "@/components/emprestar-dialog";
+import {
+  EmprestimosBloco,
+  type EmprestimoAtivo,
+} from "@/components/emprestimos-bloco";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Visao = "colecoes" | "tudo";
@@ -34,13 +39,6 @@ interface PosseColecao {
   tenho: boolean;
   lido: boolean;
   quero: boolean;
-}
-
-interface EmprestimoAtivo {
-  id: string;
-  pego_por_nome: string;
-  data_devolucao_prevista: string | null;
-  titulos: { titulo: string } | null;
 }
 
 interface ColecaoDados {
@@ -70,7 +68,9 @@ async function fetchColecao(usuarioId: string): Promise<ColecaoDados> {
       .eq("usuario_id", usuarioId),
     supabase
       .from("emprestimos")
-      .select("id, pego_por_nome, data_devolucao_prevista, titulos(titulo)")
+      .select(
+        "id, pego_por_nome, data_emprestimo, data_devolucao_prevista, ultima_cobranca_em, titulos(titulo)",
+      )
       .eq("dono_id", usuarioId)
       .eq("devolvido", false),
   ]);
@@ -182,6 +182,10 @@ function InicioPage() {
     });
   }, [data.titulos, filtro, posseMap]);
 
+  function recarregar() {
+    void queryClient.invalidateQueries({ queryKey: ["colecao", user.id] });
+  }
+
   async function handleSignOut() {
     setSaindo(true);
     await queryClient.cancelQueries();
@@ -211,6 +215,13 @@ function InicioPage() {
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <span className="font-serif text-lg tracking-tight">Libria</span>
           <div className="flex items-center gap-2">
+            <Link
+              to="/configuracoes"
+              aria-label="Configurações"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              <Gear size={16} />
+            </Link>
             <ThemeToggle />
             <Avatar className="h-9 w-9 border border-border">
               {perfil.avatar_url && (
@@ -315,6 +326,8 @@ function InicioPage() {
                         key={t.id}
                         titulo={t}
                         posse={posseMap.get(t.id)}
+                        usuarioId={user.id}
+                        onMudanca={recarregar}
                       />
                     ))}
                   </div>
@@ -352,6 +365,8 @@ function InicioPage() {
                     key={t.id}
                     titulo={t}
                     posse={posseMap.get(t.id)}
+                    usuarioId={user.id}
+                    onMudanca={recarregar}
                   />
                 ))}
               </div>
@@ -359,40 +374,10 @@ function InicioPage() {
           </section>
         )}
 
-        <section>
-          <h2 className="font-serif text-lg">Emprestados</h2>
-          {data.emprestimos.length === 0 ? (
-            <div className="mt-3 flex items-center gap-3 rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-              <Tray size={18} className="shrink-0" />
-              Nenhum empréstimo ativo. Quando você emprestar um título, ele
-              aparece aqui.
-            </div>
-          ) : (
-            <ul className="mt-3 space-y-2">
-              {data.emprestimos.map((e) => (
-                <li
-                  key={e.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm"
-                >
-                  <span className="min-w-0 truncate">
-                    {e.titulos?.titulo ?? "Título"}{" "}
-                    <span className="text-muted-foreground">
-                      com {e.pego_por_nome}
-                    </span>
-                  </span>
-                  {e.data_devolucao_prevista && (
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      devolve até{" "}
-                      {new Date(
-                        `${e.data_devolucao_prevista}T12:00:00`,
-                      ).toLocaleDateString("pt-BR")}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        <EmprestimosBloco
+          emprestimos={data.emprestimos}
+          onMudanca={recarregar}
+        />
       </div>
 
       <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/85 backdrop-blur">
@@ -451,9 +436,13 @@ function Indicador({
 function TituloCard({
   titulo,
   posse,
+  usuarioId,
+  onMudanca,
 }: {
   titulo: TituloColecao;
   posse?: PosseColecao | undefined;
+  usuarioId: string;
+  onMudanca: () => void;
 }) {
   const autor = titulo.metadados?.autor;
   return (
@@ -491,6 +480,14 @@ function TituloCard({
         />
         {posse?.quero && !posse?.tenho && (
           <Indicador ativo rotulo="Quero" icone={<Heart size={12} />} />
+        )}
+        {posse?.tenho && (
+          <EmprestarDialog
+            tituloId={titulo.id}
+            tituloNome={titulo.titulo}
+            donoId={usuarioId}
+            onRegistrado={onMudanca}
+          />
         )}
       </div>
     </article>
