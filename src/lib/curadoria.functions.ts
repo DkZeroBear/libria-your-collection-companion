@@ -60,12 +60,6 @@ export const listarSugestoesPendentes = createServerFn({ method: "GET" })
     }));
   });
 
-function texto(valor: unknown): string | null {
-  if (typeof valor !== "string") return null;
-  const limpo = valor.trim();
-  return limpo ? limpo : null;
-}
-
 /**
  * Aprova ou rejeita uma sugestão. Ao aprovar, cria a linha real em `titulos`
  * ou `fontes` com status_curadoria = 'aprovado' antes de fechar a sugestão.
@@ -78,77 +72,50 @@ export const revisarSugestao = createServerFn({ method: "POST" })
     return { sugestaoId: data.sugestaoId, acao: data.acao };
   })
   .handler(async ({ data, context }): Promise<{ status: "aprovado" | "rejeitado" }> => {
-    const { supabase, userId } = context;
+    const { aplicarRevisao, exigirModerador } = await import("./curadoria.server");
+    await exigirModerador(context.supabase, context.userId);
+    const status = await aplicarRevisao(
+      context.supabase,
+      context.userId,
+      data.sugestaoId,
+      data.acao,
+    );
+    return { status };
+  });
 
-    const { data: ehModerador, error: erroRole } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "moderador",
-    });
-    if (erroRole) throw erroRole;
-    if (!ehModerador) throw new Error("Acesso restrito a moderadores.");
+export interface ResultadoLote {
+  aprovadas: number;
+  falhas: { sugestaoId: string; erro: string }[];
+}
 
-    const { data: sugestao, error: erroSugestao } = await supabase
-      .from("sugestoes")
-      .select("id, tipo_sugestao, payload, status, sugerido_por")
-      .eq("id", data.sugestaoId)
-      .maybeSingle();
-    if (erroSugestao) throw erroSugestao;
-    if (!sugestao) throw new Error("Sugestão não encontrada.");
-    if (sugestao.status !== "pendente") throw new Error("Esta sugestão já foi revisada.");
+/** Aprova várias sugestões pendentes de uma vez, item a item. */
+export const aprovarSugestoesEmLote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sugestaoIds: string[] }) => {
+    const ids = Array.isArray(data?.sugestaoIds)
+      ? [...new Set(data.sugestaoIds.filter((id) => typeof id === "string" && id))]
+      : [];
+    if (!ids.length) throw new Error("Selecione ao menos uma sugestão.");
+    return { sugestaoIds: ids };
+  })
+  .handler(async ({ data, context }): Promise<ResultadoLote> => {
+    const { aplicarRevisao, exigirModerador } = await import("./curadoria.server");
+    await exigirModerador(context.supabase, context.userId);
 
-    const novoStatus = data.acao === "aprovar" ? "aprovado" : "rejeitado";
-    const payload = (sugestao.payload ?? {}) as Record<string, ValorPayload>;
+    const falhas: { sugestaoId: string; erro: string }[] = [];
+    let aprovadas = 0;
 
-    if (data.acao === "aprovar") {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-      if (sugestao.tipo_sugestao === "titulo") {
-        const titulo = texto(payload["titulo"]);
-        const tipoMidiaId = texto(payload["tipo_midia_id"]);
-        if (!titulo || !tipoMidiaId) throw new Error("Sugestão de título incompleta.");
-
-        const { error } = await supabaseAdmin.from("titulos").insert({
-          titulo,
-          tipo_midia_id: tipoMidiaId,
-          fonte_id: texto(payload["fonte_id"]),
-          capa_url: texto(payload["capa_url"]),
-          metadados: (payload["metadados"] ?? {}) as never,
-          fonte_validacao: texto(payload["fonte_validacao"]) ?? "manual",
-          identificador_externo: texto(payload["identificador_externo"]),
-          status_curadoria: "aprovado",
-          criado_por: sugestao.sugerido_por,
+    for (const sugestaoId of data.sugestaoIds) {
+      try {
+        await aplicarRevisao(context.supabase, context.userId, sugestaoId, "aprovar");
+        aprovadas += 1;
+      } catch (erro) {
+        falhas.push({
+          sugestaoId,
+          erro: erro instanceof Error ? erro.message : "Falha ao aprovar.",
         });
-        if (error) throw error;
-      } else if (sugestao.tipo_sugestao === "fonte") {
-        const nome = texto(payload["nome"]);
-        const tipoMidiaId = texto(payload["tipo_midia_id"]);
-        if (!nome || !tipoMidiaId) throw new Error("Sugestão de fonte incompleta.");
-
-        const total = payload["total_titulos_oficial"];
-        const { error } = await supabaseAdmin.from("fontes").insert({
-          nome,
-          descricao: texto(payload["descricao"]),
-          capa_url: texto(payload["capa_url"]),
-          tipo_midia_id: tipoMidiaId,
-          total_titulos_oficial: typeof total === "number" ? total : null,
-          status_curadoria: "aprovado",
-          criado_por: sugestao.sugerido_por,
-        });
-        if (error) throw error;
-      } else {
-        throw new Error("Tipo de sugestão desconhecido.");
       }
     }
 
-    const { error: erroUpdate } = await supabase
-      .from("sugestoes")
-      .update({
-        status: novoStatus,
-        revisado_por: userId,
-        revisado_em: new Date().toISOString(),
-      })
-      .eq("id", sugestao.id);
-    if (erroUpdate) throw erroUpdate;
-
-    return { status: novoStatus };
+    return { aprovadas, falhas };
   });

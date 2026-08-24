@@ -6,12 +6,14 @@ import { ArrowLeft, Check, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import {
+  aprovarSugestoesEmLote,
   listarSugestoesPendentes,
   revisarSugestao,
   type SugestaoPendente,
 } from "@/lib/curadoria.functions";
 import { useEhModerador } from "@/lib/use-moderador";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/curadoria")({
   head: () => ({
@@ -61,9 +63,11 @@ function CuradoriaPage() {
   const { user } = Route.useRouteContext();
   const ehModerador = useEhModerador(user.id);
   const [checou, setChecou] = useState(false);
+  const [selecionados, setSelecionados] = useState<string[]>([]);
 
   const listar = useServerFn(listarSugestoesPendentes);
   const revisar = useServerFn(revisarSugestao);
+  const aprovarLote = useServerFn(aprovarSugestoesEmLote);
 
   const { data: sugestoes, isLoading } = useQuery({
     queryKey: ["sugestoes-pendentes"],
@@ -71,20 +75,44 @@ function CuradoriaPage() {
     enabled: ehModerador,
   });
 
+  const invalidar = () => {
+    void queryClient.invalidateQueries({ queryKey: ["sugestoes-pendentes"] });
+    void queryClient.invalidateQueries({ queryKey: ["colecao"] });
+    void queryClient.invalidateQueries({ queryKey: ["catalogo-sugestao"] });
+  };
+
   const mutacao = useMutation({
     mutationFn: (vars: { sugestaoId: string; acao: "aprovar" | "rejeitar" }) =>
       revisar({ data: vars }),
-    onSuccess: (resultado) => {
+    onSuccess: (resultado, vars) => {
       toast.success(
         resultado.status === "aprovado"
           ? "Sugestão aprovada e publicada no acervo."
           : "Sugestão rejeitada.",
       );
-      void queryClient.invalidateQueries({ queryKey: ["sugestoes-pendentes"] });
-      void queryClient.invalidateQueries({ queryKey: ["colecao"] });
-      void queryClient.invalidateQueries({ queryKey: ["catalogo-sugestao"] });
+      setSelecionados((atual) => atual.filter((id) => id !== vars.sugestaoId));
+      invalidar();
     },
     onError: (erro: Error) => toast.error(erro.message || "Não foi possível revisar a sugestão."),
+  });
+
+  const mutacaoLote = useMutation({
+    mutationFn: (ids: string[]) => aprovarLote({ data: { sugestaoIds: ids } }),
+    onSuccess: (resultado) => {
+      if (resultado.aprovadas > 0) {
+        toast.success(
+          `${resultado.aprovadas} ${resultado.aprovadas === 1 ? "sugestão aprovada" : "sugestões aprovadas"}.`,
+        );
+      }
+      if (resultado.falhas.length > 0) {
+        toast.error(
+          `${resultado.falhas.length} não puderam ser aprovadas: ${resultado.falhas[0]?.erro ?? ""}`,
+        );
+      }
+      setSelecionados([]);
+      invalidar();
+    },
+    onError: (erro: Error) => toast.error(erro.message || "Não foi possível aprovar em lote."),
   });
 
   // Sem papel de moderador: avisa e devolve para a estante.
@@ -106,6 +134,13 @@ function CuradoriaPage() {
   }
 
   const lista: SugestaoPendente[] = sugestoes ?? [];
+  const idsVisiveis = lista.map((s) => s.id);
+  const marcados = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosMarcados = lista.length > 0 && marcados.length === lista.length;
+  const alternar = (id: string, marcado: boolean) =>
+    setSelecionados((atual) =>
+      marcado ? [...new Set([...atual, id])] : atual.filter((x) => x !== id),
+    );
 
   return (
     <main className="min-h-[100dvh] bg-background pb-16">
@@ -139,19 +174,52 @@ function CuradoriaPage() {
           </p>
         )}
 
+        {!isLoading && lista.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+              <Checkbox
+                checked={todosMarcados}
+                onCheckedChange={(valor) => setSelecionados(valor === true ? idsVisiveis : [])}
+                aria-label="Selecionar todas as sugestões"
+              />
+              {marcados.length > 0 ? `${marcados.length} selecionada(s)` : "Selecionar todas"}
+            </label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={marcados.length === 0 || mutacaoLote.isPending}
+              onClick={() => mutacaoLote.mutate(marcados)}
+            >
+              <Check size={14} />
+              {mutacaoLote.isPending ? "Aprovando…" : "Aprovar selecionados"}
+            </Button>
+          </div>
+        )}
+
         <ul className="space-y-3">
           {lista.map((s) => {
-            const emAndamento = mutacao.isPending && mutacao.variables?.sugestaoId === s.id;
+            const emAndamento =
+              (mutacao.isPending && mutacao.variables?.sugestaoId === s.id) ||
+              (mutacaoLote.isPending && marcados.includes(s.id));
             return (
               <li key={s.id} className="rounded-lg border border-border p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-                      {s.tipo_sugestao === "fonte" ? "Fonte nova" : "Título"}
-                    </span>
-                    <p className="mt-2 font-serif text-base leading-tight">
-                      {String(s.payload["titulo"] ?? s.payload["nome"] ?? "Sem nome")}
-                    </p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      className="mt-1"
+                      checked={marcados.includes(s.id)}
+                      onCheckedChange={(valor) => alternar(s.id, valor === true)}
+                      aria-label={`Selecionar sugestão ${String(s.payload["titulo"] ?? s.payload["nome"] ?? "")}`}
+                    />
+                    <div>
+                      <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {s.tipo_sugestao === "fonte" ? "Fonte nova" : "Título"}
+                      </span>
+                      <p className="mt-2 font-serif text-base leading-tight">
+                        {String(s.payload["titulo"] ?? s.payload["nome"] ?? "Sem nome")}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
