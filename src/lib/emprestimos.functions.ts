@@ -27,7 +27,7 @@ export const cobrarEmprestimo = createServerFn({ method: "POST" })
     const { data: emprestimo, error: erroEmprestimo } = await supabase
       .from("emprestimos")
       .select(
-        "id, dono_id, pego_por_nome, data_emprestimo, devolvido, titulos(titulo)",
+        "id, dono_id, pego_por_nome, data_emprestimo, devolvido, ultima_cobranca_em, titulos(titulo)",
       )
       .eq("id", data.emprestimoId)
       .eq("dono_id", userId)
@@ -36,6 +36,17 @@ export const cobrarEmprestimo = createServerFn({ method: "POST" })
     if (erroEmprestimo) throw erroEmprestimo;
     if (!emprestimo) throw new Error("Empréstimo não encontrado.");
     if (emprestimo.devolvido) throw new Error("Este empréstimo já foi devolvido.");
+
+    if (emprestimo.ultima_cobranca_em) {
+      const proxima =
+        new Date(emprestimo.ultima_cobranca_em).getTime() + COOLDOWN_MS;
+      if (Date.now() < proxima) {
+        return {
+          status: "aguarde",
+          proximaCobrancaEm: new Date(proxima).toISOString(),
+        };
+      }
+    }
 
     const { data: perfil, error: erroPerfil } = await supabase
       .from("usuarios_telegram")
