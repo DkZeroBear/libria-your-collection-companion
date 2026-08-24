@@ -327,7 +327,9 @@ export function LoteFontes({ tipos, usuarioId, onConcluir }: Props) {
             disabled={enviando}
             onClick={() => void enviar()}
           >
-            {enviando ? "Enviando…" : `Enviar ${itens.filter((i) => i.nome.trim()).length} coleções`}
+            {enviando
+              ? "Enviando…"
+              : `Enviar ${itens.filter((i) => i.nome.trim()).length} coleções`}
           </Button>
         </section>
       )}
