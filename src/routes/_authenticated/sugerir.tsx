@@ -234,7 +234,7 @@ function SugerirPage() {
           {(
             [
               { valor: "titulo", rotulo: "Título" },
-              { valor: "fonte", rotulo: "Fonte nova" },
+              { valor: "fonte", rotulo: "Coleção" },
             ] as const
           ).map((opcao) => (
             <button
