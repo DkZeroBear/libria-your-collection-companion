@@ -15,6 +15,7 @@ export default tseslint.config(
       // Arquivo gerado automaticamente pela integração Supabase; reformatá-lo
       // é inútil porque ele é reescrito sem passar pelo Prettier.
       "src/integrations/supabase/types.ts",
+      "src/integrations/supabase/previewAuthStorage.ts",
     ],
   },
   {
