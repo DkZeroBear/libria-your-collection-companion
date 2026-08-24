@@ -19,7 +19,8 @@ export const Route = createFileRoute("/_authenticated/curadoria")({
       { title: "Curadoria — Libria" },
       {
         name: "description",
-        content: "Fila de curadoria do Libria: revise, aprove ou rejeite sugestões de títulos e coleções.",
+        content:
+          "Fila de curadoria do Libria: revise, aprove ou rejeite sugestões de títulos e coleções.",
       },
       { property: "og:title", content: "Curadoria — Libria" },
       {
@@ -45,8 +46,7 @@ function formatarData(iso: string) {
 
 function LinhaCampo({ chave, valor }: { chave: string; valor: unknown }) {
   if (valor === null || valor === undefined || valor === "") return null;
-  const texto =
-    typeof valor === "object" ? JSON.stringify(valor, null, 0) : String(valor);
+  const texto = typeof valor === "object" ? JSON.stringify(valor, null, 0) : String(valor);
   return (
     <div className="flex gap-2 text-xs">
       <span className="min-w-28 shrink-0 text-muted-foreground">{chave}</span>
