@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { buscarPorIsbn as buscarIsbnFn } from "@/lib/isbn.functions";
+import { LoteTitulos } from "@/components/sugerir/lote-titulos";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
