@@ -15,7 +15,6 @@ import { GradeTudo } from "@/components/estante/grade-tudo";
 import { SeletorVisao } from "@/components/estante/seletor-visao";
 import { StatChip } from "@/components/estante/stat-chip";
 import {
-  FILTROS,
   type ColecaoDados,
   type Filtro,
   type PosseColecao,
@@ -236,8 +235,3 @@ function InicioPage() {
     </main>
   );
 }
-
-// Reexportado para que consumidores externos (testes, tipos compartilhados)
-// continuem enxergando os tipos da estante a partir da rota.
-export type { ColecaoDados, PosseColecao, TituloColecao, Visao, Filtro };
-void FILTROS;
