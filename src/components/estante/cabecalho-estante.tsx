@@ -27,6 +27,14 @@ export function CabecalhoEstante({
         <span className="font-serif text-lg tracking-tight">Libria</span>
         <div className="flex items-center gap-2">
           <Link
+            to="/sugerir"
+            aria-label="Sugerir item"
+            className="flex h-9 items-center gap-1 rounded-lg border border-border px-2.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            <Plus size={14} />
+            Sugerir item
+          </Link>
+          <Link
             to="/configuracoes"
             aria-label="Configurações"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
