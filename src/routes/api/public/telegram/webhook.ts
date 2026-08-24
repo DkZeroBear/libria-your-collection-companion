@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createHash, timingSafeEqual } from "crypto";
 
 interface TelegramUpdate {
   message?: {
@@ -11,29 +12,65 @@ interface TelegramUpdate {
   };
 }
 
+function gatewayBase(): string {
+  return (
+    process.env["CONNECTOR_GATEWAY_BASE_URL"] ??
+    "https://connector-gateway.lovable.dev"
+  );
+}
+
+const GATEWAY_URL = `${gatewayBase()}/telegram`;
+
+/**
+ * Deriva o secret_token do webhook a partir da chave de conexão do Telegram.
+ * O mesmo valor é registrado no setWebhook e verificado aqui na entrada.
+ */
+function derivarSecretWebhook(telegramApiKey: string): string {
+  return createHash("sha256")
+    .update(`telegram-webhook:${telegramApiKey}`)
+    .digest("base64url");
+}
+
+function igualSeguro(a: string, b: string): boolean {
+  const esq = Buffer.from(a);
+  const dir = Buffer.from(b);
+  return esq.length === dir.length && timingSafeEqual(esq, dir);
+}
+
 async function responder(chatId: number, texto: string) {
-  const token = process.env["TELEGRAM_BOT_TOKEN"];
-  if (!token) return;
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const lovableApiKey = process.env["LOVABLE_API_KEY"];
+  const telegramApiKey = process.env["TELEGRAM_API_KEY"];
+  if (!lovableApiKey || !telegramApiKey) return;
+  await fetch(`${GATEWAY_URL}/sendMessage`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${lovableApiKey}`,
+      "X-Connection-Api-Key": telegramApiKey,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ chat_id: chatId, text: texto }),
   });
 }
 
 /**
- * Webhook do bot do Telegram. Reconhece `/vincular CODIGO` e grava o
- * chat_id no perfil correspondente (service role: o webhook não tem sessão).
+ * Webhook do bot do Telegram. Verifica o secret_token derivado da chave de
+ * conexão, reconhece `/vincular CODIGO` e grava o chat_id no perfil
+ * correspondente (service role: o webhook não tem sessão de usuário).
  */
 export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const segredo = process.env["TELEGRAM_WEBHOOK_SECRET"];
-        if (
-          segredo &&
-          request.headers.get("x-telegram-bot-api-secret-token") !== segredo
-        ) {
+        const telegramApiKey = process.env["TELEGRAM_API_KEY"];
+        if (!telegramApiKey) {
+          console.error("[telegram webhook] TELEGRAM_API_KEY ausente");
+          return new Response("Serviço indisponível", { status: 503 });
+        }
+
+        const secretEsperado = derivarSecretWebhook(telegramApiKey);
+        const secretRecebido =
+          request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+        if (!igualSeguro(secretRecebido, secretEsperado)) {
           return new Response("Unauthorized", { status: 401 });
         }
 
@@ -80,12 +117,18 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         if (error) {
           console.error("[telegram webhook] erro ao vincular:", error.message);
-          await responder(chatId, "Erro ao vincular. Tente novamente em instantes.");
+          await responder(
+            chatId,
+            "Erro ao vincular. Tente novamente em instantes.",
+          );
           return Response.json({ ok: false }, { status: 500 });
         }
 
         if (!data) {
-          await responder(chatId, "Código inválido. Confira em Configurações no Libria.");
+          await responder(
+            chatId,
+            "Código inválido. Confira em Configurações no Libria.",
+          );
           return Response.json({ ok: true });
         }
 
