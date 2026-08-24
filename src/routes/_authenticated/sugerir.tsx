@@ -31,11 +31,7 @@ interface FonteAprovada {
 async function fetchCatalogo(): Promise<{ tipos: TipoMidia[]; fontes: FonteAprovada[] }> {
   const [tiposRes, fontesRes] = await Promise.all([
     supabase.from("tipos_midia").select("id, nome, nome_exibicao").eq("ativo", true).order("nome"),
-    supabase
-      .from("fontes")
-      .select("id, nome")
-      .eq("status_curadoria", "aprovado")
-      .order("nome"),
+    supabase.from("fontes").select("id, nome").eq("status_curadoria", "aprovado").order("nome"),
   ]);
   if (tiposRes.error) throw tiposRes.error;
   if (fontesRes.error) throw fontesRes.error;
