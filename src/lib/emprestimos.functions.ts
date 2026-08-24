@@ -4,7 +4,11 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type ResultadoCobranca =
   | { status: "enviado"; cobradoEm: string }
-  | { status: "sem_telegram" };
+  | { status: "sem_telegram" }
+  | { status: "aguarde"; proximaCobrancaEm: string };
+
+/** Intervalo mínimo entre duas cobranças do mesmo empréstimo. */
+const COOLDOWN_MS = 4 * 60 * 60 * 1000;
 
 /**
  * Dispara a cobrança de um empréstimo por Telegram, no chat do dono.
