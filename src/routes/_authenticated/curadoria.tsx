@@ -6,12 +6,15 @@ import { ArrowLeft, Check, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import {
+  aprovarSugestoesEmLote,
   listarSugestoesPendentes,
   revisarSugestao,
   type SugestaoPendente,
 } from "@/lib/curadoria.functions";
 import { useEhModerador } from "@/lib/use-moderador";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 export const Route = createFileRoute("/_authenticated/curadoria")({
   head: () => ({
