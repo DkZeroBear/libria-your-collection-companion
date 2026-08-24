@@ -51,6 +51,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "denuncias_denunciado_por_fkey"
+            columns: ["denunciado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "denuncias_fonte_id_fkey"
             columns: ["fonte_id"]
             isOneToOne: false
@@ -118,10 +125,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "emprestimos_dono_id_fkey"
+            columns: ["dono_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "emprestimos_pego_por_usuario_id_fkey"
             columns: ["pego_por_usuario_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emprestimos_pego_por_usuario_id_fkey"
+            columns: ["pego_por_usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
             referencedColumns: ["id"]
           },
           {
@@ -169,6 +190,13 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "feedback_produto_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
         ]
       }
       fontes: {
@@ -211,6 +239,13 @@ export type Database = {
             columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fontes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
             referencedColumns: ["id"]
           },
           {
@@ -265,6 +300,13 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "posse_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sugestoes: {
@@ -307,10 +349,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sugestoes_revisado_por_fkey"
+            columns: ["revisado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sugestoes_sugerido_por_fkey"
             columns: ["sugerido_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sugestoes_sugerido_por_fkey"
+            columns: ["sugerido_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
             referencedColumns: ["id"]
           },
         ]
@@ -394,6 +450,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "titulos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "titulos_fonte_id_fkey"
             columns: ["fonte_id"]
             isOneToOne: false
@@ -431,6 +494,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_publico"
             referencedColumns: ["id"]
           },
         ]
@@ -479,7 +549,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      usuarios_publico: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          colecionador_desde: string | null
+          id: string | null
+          nome_exibicao: string | null
+          reputacao: number | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          colecionador_desde?: string | null
+          id?: string | null
+          nome_exibicao?: string | null
+          reputacao?: number | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          colecionador_desde?: string | null
+          id?: string | null
+          nome_exibicao?: string | null
+          reputacao?: number | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
