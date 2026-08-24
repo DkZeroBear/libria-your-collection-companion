@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Gear, SignOut } from "@phosphor-icons/react";
+import { Gear, Plus, SignOut } from "@phosphor-icons/react";
 
 import type { UsuarioPerfil } from "@/lib/ensure-usuario";
 import { ThemeToggle } from "@/components/theme-toggle";
