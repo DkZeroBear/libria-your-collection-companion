@@ -6,9 +6,7 @@
  */
 
 function gatewayBase(): string {
-  return (
-    process.env["CONNECTOR_GATEWAY_BASE_URL"] ?? "https://connector-gateway.lovable.dev"
-  );
+  return process.env["CONNECTOR_GATEWAY_BASE_URL"] ?? "https://connector-gateway.lovable.dev";
 }
 
 const GATEWAY_URL = `${gatewayBase()}/telegram`;
@@ -31,18 +29,14 @@ async function chamarGateway(method: string, corpo: unknown) {
 
   if (!resposta.ok) {
     const corpoErro = await resposta.text();
-    console.error(
-      `[telegram] ${method} falhou [${resposta.status}]: ${corpoErro}`,
-    );
+    console.error(`[telegram] ${method} falhou [${resposta.status}]: ${corpoErro}`);
     throw new Error(`Telegram respondeu ${resposta.status}: ${corpoErro}`);
   }
 
   const dados = (await resposta.json()) as { ok?: boolean; description?: string };
   if (!dados.ok) {
     console.error(`[telegram] resposta não ok: ${dados.description}`);
-    throw new Error(
-      dados.description ?? "Falha ao enviar mensagem no Telegram.",
-    );
+    throw new Error(dados.description ?? "Falha ao enviar mensagem no Telegram.");
   }
   return dados;
 }
@@ -50,10 +44,7 @@ async function chamarGateway(method: string, corpo: unknown) {
 /**
  * Envia uma mensagem via Telegram Bot API pelo gateway gerenciado.
  */
-export async function enviarMensagemTelegram(
-  chatId: string,
-  texto: string,
-): Promise<void> {
+export async function enviarMensagemTelegram(chatId: string, texto: string): Promise<void> {
   await chamarGateway("sendMessage", {
     chat_id: chatId,
     text: texto,

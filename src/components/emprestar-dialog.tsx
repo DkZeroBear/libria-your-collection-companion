@@ -108,9 +108,7 @@ export function EmprestarDialog({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="emprestimo-prevista">
-              Devolução prevista (opcional)
-            </Label>
+            <Label htmlFor="emprestimo-prevista">Devolução prevista (opcional)</Label>
             <Input
               id="emprestimo-prevista"
               type="date"

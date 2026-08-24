@@ -38,8 +38,8 @@ committed `.env` file. Configure them through **Lovable → Project Settings →
 Secrets** (or the Supabase dashboard, where applicable); they are injected
 into the server runtime and never exposed to the browser:
 
-| Secret | Purpose |
-| --- | --- |
-| `SUPABASE_SERVICE_ROLE_KEY` | Bypasses Row-Level Security; privileged database access (server functions only). |
-| `TELEGRAM_API_KEY` | Bot token for the Telegram connector (sending charge reminders, verifying webhook). |
-| `LOVABLE_API_KEY` | Authenticates calls to the Lovable connector gateway. |
+| Secret                      | Purpose                                                                             |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY` | Bypasses Row-Level Security; privileged database access (server functions only).    |
+| `TELEGRAM_API_KEY`          | Bot token for the Telegram connector (sending charge reminders, verifying webhook). |
+| `LOVABLE_API_KEY`           | Authenticates calls to the Lovable connector gateway.                               |

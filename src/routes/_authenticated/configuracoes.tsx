@@ -7,8 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const BOT_USERNAME =
-  (import.meta.env["VITE_TELEGRAM_BOT_USERNAME"] as string | undefined) ??
-  "LibriaAppBot";
+  (import.meta.env["VITE_TELEGRAM_BOT_USERNAME"] as string | undefined) ?? "LibriaAppBot";
 
 interface PerfilTelegram {
   nome_exibicao: string;
@@ -46,10 +45,8 @@ const perfilQueryOptions = (usuarioId: string) =>
     },
   });
 
-
 export const Route = createFileRoute("/_authenticated/configuracoes")({
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(perfilQueryOptions(context.user.id)),
+  loader: ({ context }) => context.queryClient.ensureQueryData(perfilQueryOptions(context.user.id)),
   head: () => ({
     meta: [
       { title: "Configurações — Libria" },
@@ -110,9 +107,7 @@ function ConfiguracoesPage() {
       <div className="mx-auto max-w-2xl space-y-8 px-4 pt-6">
         <section>
           <h1 className="font-serif text-2xl leading-tight">Configurações</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ajustes da sua conta no Libria.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Ajustes da sua conta no Libria.</p>
         </section>
 
         <section className="rounded-lg border border-border bg-card p-4">
@@ -129,8 +124,7 @@ function ConfiguracoesPage() {
           ) : (
             <>
               <p className="mt-2 text-sm text-muted-foreground">
-                Conecte o Telegram para receber os lembretes de empréstimo
-                quando usar “Cobrar”.
+                Conecte o Telegram para receber os lembretes de empréstimo quando usar “Cobrar”.
               </p>
               <ol className="mt-4 space-y-3 text-sm">
                 <li className="flex gap-2">
@@ -167,8 +161,7 @@ function ConfiguracoesPage() {
                 </button>
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                Depois de vincular, recarregue esta página para ver a conexão
-                confirmada.
+                Depois de vincular, recarregue esta página para ver a conexão confirmada.
               </p>
             </>
           )}

@@ -13,10 +13,7 @@ interface TelegramUpdate {
 }
 
 function gatewayBase(): string {
-  return (
-    process.env["CONNECTOR_GATEWAY_BASE_URL"] ??
-    "https://connector-gateway.lovable.dev"
-  );
+  return process.env["CONNECTOR_GATEWAY_BASE_URL"] ?? "https://connector-gateway.lovable.dev";
 }
 
 const GATEWAY_URL = `${gatewayBase()}/telegram`;
@@ -26,9 +23,7 @@ const GATEWAY_URL = `${gatewayBase()}/telegram`;
  * O mesmo valor é registrado no setWebhook e verificado aqui na entrada.
  */
 function derivarSecretWebhook(telegramApiKey: string): string {
-  return createHash("sha256")
-    .update(`telegram-webhook:${telegramApiKey}`)
-    .digest("base64url");
+  return createHash("sha256").update(`telegram-webhook:${telegramApiKey}`).digest("base64url");
 }
 
 function igualSeguro(a: string, b: string): boolean {
@@ -68,8 +63,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         }
 
         const secretEsperado = derivarSecretWebhook(telegramApiKey);
-        const secretRecebido =
-          request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+        const secretRecebido = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
         if (!igualSeguro(secretRecebido, secretEsperado)) {
           return new Response("Unauthorized", { status: 401 });
         }
@@ -96,17 +90,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         const match = texto.match(/^\/vincular\s+([A-Za-z0-9]{4,12})$/);
         if (!match) {
-          await responder(
-            chatId,
-            "Comando não reconhecido. Use: /vincular SEUCODIGO",
-          );
+          await responder(chatId, "Comando não reconhecido. Use: /vincular SEUCODIGO");
           return Response.json({ ok: true });
         }
 
         const codigo = match[1]!.toUpperCase();
-        const { supabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
-        );
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const { data, error } = await supabaseAdmin
           .from("usuarios_telegram")
@@ -117,18 +106,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         if (error) {
           console.error("[telegram webhook] erro ao vincular:", error.message);
-          await responder(
-            chatId,
-            "Erro ao vincular. Tente novamente em instantes.",
-          );
+          await responder(chatId, "Erro ao vincular. Tente novamente em instantes.");
           return Response.json({ ok: false }, { status: 500 });
         }
 
         if (!data) {
-          await responder(
-            chatId,
-            "Código inválido. Confira em Configurações no Libria.",
-          );
+          await responder(chatId, "Código inválido. Confira em Configurações no Libria.");
           return Response.json({ ok: true });
         }
 
