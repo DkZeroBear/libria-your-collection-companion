@@ -31,7 +31,11 @@ interface TituloColecao {
   capa_url: string | null;
   metadados: { autor?: string; editora?: string; ano?: string | number } | null;
   fonte_id: string | null;
-  fontes: { id: string; nome: string } | null;
+  fontes: {
+    id: string;
+    nome: string;
+    total_titulos_oficial: number | null;
+  } | null;
 }
 
 interface PosseColecao {
@@ -59,7 +63,9 @@ async function fetchColecao(usuarioId: string): Promise<ColecaoDados> {
   const [titulosRes, possesRes, emprestimosRes] = await Promise.all([
     supabase
       .from("titulos")
-      .select("id, titulo, capa_url, metadados, fonte_id, fontes(id, nome)")
+      .select(
+        "id, titulo, capa_url, metadados, fonte_id, fontes(id, nome, total_titulos_oficial)",
+      )
       .eq("status_curadoria", "aprovado")
       .order("titulo"),
     supabase
