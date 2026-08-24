@@ -3,12 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type ValorPayload =
-  | string
-  | number
-  | boolean
-  | null
-  | ValorPayload[]
-  | { [chave: string]: ValorPayload };
+  string | number | boolean | null | ValorPayload[] | { [chave: string]: ValorPayload };
 
 export interface SugestaoPendente {
   id: string;
