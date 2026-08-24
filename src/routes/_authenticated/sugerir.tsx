@@ -353,7 +353,7 @@ function SugerirPage() {
           ) : (
             <>
               <div className="space-y-1.5">
-                <Label htmlFor="fonte-nome">Nome da coleção</Label>
+                <Label htmlFor="fonte-nome">Nome da Coleção</Label>
                 <Input
                   id="fonte-nome"
                   value={fonteNome}
