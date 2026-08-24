@@ -9,7 +9,7 @@ export interface UsuarioPerfil {
   avatar_url: string | null;
 }
 
-function deriveUsername(email: string | undefined): string {
+export function deriveUsername(email: string | undefined): string {
   const base = (email?.split("@")[0] ?? "colecionador")
     .toLowerCase()
     .normalize("NFD")
