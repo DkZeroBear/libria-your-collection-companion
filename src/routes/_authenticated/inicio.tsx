@@ -165,7 +165,7 @@ function InicioPage() {
 
       <div className="mx-auto max-w-2xl space-y-8 px-4 pt-6">
         <section>
-          <h1 className="font-serif text-2xl leading-tight">Minha estante</h1>
+          <h1 className="font-serif text-2xl leading-tight">Minha Estante</h1>
           <p className="mt-1 text-sm text-muted-foreground">@{perfil.username}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <StatChip rotulo={`${stats.tenho} na estante`} />
