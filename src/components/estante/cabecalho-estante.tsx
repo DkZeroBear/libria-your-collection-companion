@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Gear, SignOut } from "@phosphor-icons/react";
+import { Gear, Plus, SignOut } from "@phosphor-icons/react";
 
 import type { UsuarioPerfil } from "@/lib/ensure-usuario";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -26,6 +26,14 @@ export function CabecalhoEstante({
       <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
         <span className="font-serif text-lg tracking-tight">Libria</span>
         <div className="flex items-center gap-2">
+          <Link
+            to="/sugerir"
+            aria-label="Sugerir item"
+            className="flex h-9 items-center gap-1 rounded-lg border border-border px-2.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            <Plus size={14} />
+            Sugerir item
+          </Link>
           <Link
             to="/configuracoes"
             aria-label="Configurações"

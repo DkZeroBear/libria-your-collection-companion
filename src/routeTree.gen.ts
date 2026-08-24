@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedSugerirRouteImport } from './routes/_authenticated/sugerir'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSugerirRoute = AuthenticatedSugerirRouteImport.update({
+  id: '/sugerir',
+  path: '/sugerir',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicTelegramWebhookRoute =
   ApiPublicTelegramWebhookRouteImport.update({
     id: '/api/public/telegram/webhook',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesById {
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRouteTypes {
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/configuracoes'
     | '/inicio'
+    | '/sugerir'
     | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/configuracoes'
     | '/inicio'
+    | '/sugerir'
     | '/api/public/telegram/webhook'
   id:
     | '__root__'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/configuracoes'
     | '/_authenticated/inicio'
+    | '/_authenticated/sugerir'
     | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -140,6 +152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/sugerir': {
+      id: '/_authenticated/sugerir'
+      path: '/sugerir'
+      fullPath: '/sugerir'
+      preLoaderRoute: typeof AuthenticatedSugerirRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/telegram/webhook': {
       id: '/api/public/telegram/webhook'
       path: '/api/public/telegram/webhook'
@@ -153,11 +172,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedSugerirRoute: typeof AuthenticatedSugerirRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedSugerirRoute: AuthenticatedSugerirRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
