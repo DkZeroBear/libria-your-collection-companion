@@ -26,3 +26,20 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Environment variables
+
+Copy `.env.example` to `.env` and fill in your Supabase project values. The
+keys present in `.env` are all **public/anon** values (safe to commit). The
+client-side keys are prefixed with `VITE_`.
+
+The following are **server-side secrets** and must NEVER be placed in the
+committed `.env` file. Configure them through **Lovable → Project Settings →
+Secrets** (or the Supabase dashboard, where applicable); they are injected
+into the server runtime and never exposed to the browser:
+
+| Secret | Purpose |
+| --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` | Bypasses Row-Level Security; privileged database access (server functions only). |
+| `TELEGRAM_API_KEY` | Bot token for the Telegram connector (sending charge reminders, verifying webhook). |
+| `LOVABLE_API_KEY` | Authenticates calls to the Lovable connector gateway. |
