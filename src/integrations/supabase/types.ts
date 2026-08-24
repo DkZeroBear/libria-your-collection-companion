@@ -588,6 +588,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      meu_codigo_telegram: {
+        Args: never
+        Returns: {
+          telegram_chat_id: string
+          telegram_codigo_vinculo: string
+        }[]
+      }
     }
     Enums: {
       app_role: "moderador"
