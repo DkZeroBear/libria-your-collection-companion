@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { buscarPorIsbn as buscarIsbnFn } from "@/lib/isbn.functions";
+import { LoteTitulos } from "@/components/sugerir/lote-titulos";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,7 @@ function SugerirPage() {
   const tipoLivro = data.tipos.find((t) => t.nome === "livro") ?? data.tipos[0];
 
   const [modo, setModo] = useState<Modo>("titulo");
+  const [emLote, setEmLote] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   // Título
@@ -246,166 +248,201 @@ function SugerirPage() {
           ))}
         </div>
 
-        <form onSubmit={enviar} className="space-y-4">
-          {modo === "titulo" ? (
-            <>
-              <div className="space-y-1.5">
-                <Label htmlFor="isbn">ISBN (opcional)</Label>
-                <Input
-                  id="isbn"
-                  value={isbn}
-                  onChange={(e) => setIsbn(e.target.value)}
-                  onBlur={() => void buscarIsbn()}
-                  placeholder="978..."
-                  maxLength={20}
-                  inputMode="numeric"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  {buscandoIsbn
-                    ? "Buscando no Google Books…"
-                    : "Ao sair do campo, tentamos preencher os dados automaticamente."}
-                </p>
-              </div>
+        {modo === "titulo" && (
+          <div className="inline-flex rounded-lg border border-border p-1">
+            {(
+              [
+                { valor: false, rotulo: "Individual" },
+                { valor: true, rotulo: "Em lote" },
+              ] as const
+            ).map((opcao) => (
+              <button
+                key={String(opcao.valor)}
+                type="button"
+                onClick={() => setEmLote(opcao.valor)}
+                className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
+                  emLote === opcao.valor
+                    ? "border border-primary text-primary"
+                    : "border border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opcao.rotulo}
+              </button>
+            ))}
+          </div>
+        )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="titulo">Título</Label>
-                <Input
-                  id="titulo"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
-                  maxLength={200}
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="tipo-midia">Tipo de mídia</Label>
-                <Select value={tipoMidiaId} onValueChange={setTipoMidiaId}>
-                  <SelectTrigger id="tipo-midia" className="w-full">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.tipos.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.nome_exibicao}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="fonte">Fonte / coleção (opcional)</Label>
-                <Select value={fonteId} onValueChange={setFonteId}>
-                  <SelectTrigger id="fonte" className="w-full">
-                    <SelectValue placeholder="Nenhuma" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="nenhuma">Nenhuma</SelectItem>
-                    {data.fontes.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
+        {modo === "titulo" && emLote ? (
+          <LoteTitulos
+            tipos={data.tipos}
+            fontes={data.fontes}
+            usuarioId={user.id}
+            onConcluir={() =>
+              navigate({ to: "/inicio", search: { visao: "colecoes", filtro: "todos" } })
+            }
+          />
+        ) : (
+          <form onSubmit={enviar} className="space-y-4">
+            {modo === "titulo" ? (
+              <>
                 <div className="space-y-1.5">
-                  <Label htmlFor="autor">{ehJogo ? "Plataforma" : "Autor"}</Label>
+                  <Label htmlFor="isbn">ISBN (opcional)</Label>
                   <Input
-                    id="autor"
-                    value={autor}
-                    onChange={(e) => setAutor(e.target.value)}
-                    maxLength={160}
+                    id="isbn"
+                    value={isbn}
+                    onChange={(e) => setIsbn(e.target.value)}
+                    onBlur={() => void buscarIsbn()}
+                    placeholder="978..."
+                    maxLength={20}
+                    inputMode="numeric"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    {buscandoIsbn
+                      ? "Buscando no Google Books…"
+                      : "Ao sair do campo, tentamos preencher os dados automaticamente."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="titulo">Título</Label>
+                  <Input
+                    id="titulo"
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
+                    maxLength={200}
+                    required
                   />
                 </div>
+
                 <div className="space-y-1.5">
-                  <Label htmlFor="editora">{ehJogo ? "Desenvolvedora" : "Editora"}</Label>
+                  <Label htmlFor="tipo-midia">Tipo de mídia</Label>
+                  <Select value={tipoMidiaId} onValueChange={setTipoMidiaId}>
+                    <SelectTrigger id="tipo-midia" className="w-full">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {data.tipos.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.nome_exibicao}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="fonte">Fonte / coleção (opcional)</Label>
+                  <Select value={fonteId} onValueChange={setFonteId}>
+                    <SelectTrigger id="fonte" className="w-full">
+                      <SelectValue placeholder="Nenhuma" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="nenhuma">Nenhuma</SelectItem>
+                      {data.fontes.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>
+                          {f.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="autor">{ehJogo ? "Plataforma" : "Autor"}</Label>
+                    <Input
+                      id="autor"
+                      value={autor}
+                      onChange={(e) => setAutor(e.target.value)}
+                      maxLength={160}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="editora">{ehJogo ? "Desenvolvedora" : "Editora"}</Label>
+                    <Input
+                      id="editora"
+                      value={editora}
+                      onChange={(e) => setEditora(e.target.value)}
+                      maxLength={160}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="ano">Ano</Label>
                   <Input
-                    id="editora"
-                    value={editora}
-                    onChange={(e) => setEditora(e.target.value)}
-                    maxLength={160}
+                    id="ano"
+                    value={ano}
+                    onChange={(e) => setAno(e.target.value)}
+                    maxLength={4}
+                    inputMode="numeric"
+                    placeholder="2024"
                   />
                 </div>
-              </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fonte-nome">Nome da Coleção</Label>
+                  <Input
+                    id="fonte-nome"
+                    value={fonteNome}
+                    onChange={(e) => setFonteNome(e.target.value)}
+                    maxLength={160}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="ano">Ano</Label>
-                <Input
-                  id="ano"
-                  value={ano}
-                  onChange={(e) => setAno(e.target.value)}
-                  maxLength={4}
-                  inputMode="numeric"
-                  placeholder="2024"
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-                <Label htmlFor="fonte-nome">Nome da Coleção</Label>
-                <Input
-                  id="fonte-nome"
-                  value={fonteNome}
-                  onChange={(e) => setFonteNome(e.target.value)}
-                  maxLength={160}
-                  required
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fonte-descricao">Descrição</Label>
+                  <Textarea
+                    id="fonte-descricao"
+                    value={fonteDescricao}
+                    onChange={(e) => setFonteDescricao(e.target.value)}
+                    rows={3}
+                    maxLength={600}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="fonte-descricao">Descrição</Label>
-                <Textarea
-                  id="fonte-descricao"
-                  value={fonteDescricao}
-                  onChange={(e) => setFonteDescricao(e.target.value)}
-                  rows={3}
-                  maxLength={600}
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fonte-tipo">Tipo de mídia predominante</Label>
+                  <Select value={fonteTipoId} onValueChange={setFonteTipoId}>
+                    <SelectTrigger id="fonte-tipo" className="w-full">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {data.tipos.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.nome_exibicao}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="fonte-tipo">Tipo de mídia predominante</Label>
-                <Select value={fonteTipoId} onValueChange={setFonteTipoId}>
-                  <SelectTrigger id="fonte-tipo" className="w-full">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.tipos.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.nome_exibicao}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fonte-total">Total de títulos oficial (opcional)</Label>
+                  <Input
+                    id="fonte-total"
+                    value={fonteTotal}
+                    onChange={(e) => setFonteTotal(e.target.value.replace(/\D/g, ""))}
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="Ex: 12"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Preencha só para coleções fechadas, com número de volumes conhecido. Deixe vazio
+                    para categorias abertas.
+                  </p>
+                </div>
+              </>
+            )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="fonte-total">Total de títulos oficial (opcional)</Label>
-                <Input
-                  id="fonte-total"
-                  value={fonteTotal}
-                  onChange={(e) => setFonteTotal(e.target.value.replace(/\D/g, ""))}
-                  inputMode="numeric"
-                  maxLength={4}
-                  placeholder="Ex: 12"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Preencha só para coleções fechadas, com número de volumes conhecido. Deixe vazio
-                  para categorias abertas.
-                </p>
-              </div>
-            </>
-          )}
-
-          <Button type="submit" className="w-full" disabled={enviando}>
-            {enviando ? "Enviando…" : "Enviar para curadoria"}
-          </Button>
-        </form>
+            <Button type="submit" className="w-full" disabled={enviando}>
+              {enviando ? "Enviando…" : "Enviar para curadoria"}
+            </Button>
+          </form>
+        )}
       </div>
     </main>
   );
