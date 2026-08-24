@@ -113,36 +113,31 @@ function SugerirPage() {
     if (!limpo) return;
     setBuscandoIsbn(true);
     try {
-      const resposta = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(limpo)}`,
-      );
-      if (!resposta.ok) throw new Error("falha");
-      const json = (await resposta.json()) as {
-        items?: {
-          volumeInfo?: {
-            title?: string;
-            authors?: string[];
-            publisher?: string;
-            publishedDate?: string;
-          };
-        }[];
-      };
-      const info = json.items?.[0]?.volumeInfo;
-      if (!info) {
-        toast.info("ISBN não encontrado. Preencha os campos manualmente.");
+      const resultado = await buscarIsbnFn({ data: { isbn: limpo } });
+      if (!resultado.encontrado || !resultado.dados) {
+        toast.info(
+          resultado.erro ?? "ISBN não encontrado. Preencha manualmente.",
+        );
         return;
       }
-      if (info.title) setTitulo(info.title);
-      if (info.authors?.length) setAutor(info.authors.join(", "));
-      if (info.publisher) setEditora(info.publisher);
-      if (info.publishedDate) setAno(info.publishedDate.slice(0, 4));
-      toast.success("Dados preenchidos pelo ISBN. Revise antes de enviar.");
-    } catch {
-      toast.info("Não foi possível buscar o ISBN. Preencha manualmente.");
+      const { titulo: t, autor: a, editora: e, ano: y } = resultado.dados;
+      if (t) setTitulo(t);
+      if (a) setAutor(a);
+      if (e) setEditora(e);
+      if (y) setAno(y);
+      toast.success(
+        resultado.fonte === "open_library"
+          ? "Dados preenchidos via Open Library. Revise antes de enviar."
+          : "Dados preenchidos via Google Books. Revise antes de enviar.",
+      );
+    } catch (erro) {
+      console.error("[sugerir] busca por ISBN falhou", erro);
+      toast.error("Não foi possível buscar o ISBN. Preencha manualmente.");
     } finally {
       setBuscandoIsbn(false);
     }
   }
+
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault();
