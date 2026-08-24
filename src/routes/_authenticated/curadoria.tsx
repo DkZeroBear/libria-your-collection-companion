@@ -177,21 +177,55 @@ function CuradoriaPage() {
           </p>
         )}
 
+        {!isLoading && lista.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+              <Checkbox
+                checked={todosMarcados}
+                onCheckedChange={(valor) => setSelecionados(valor === true ? idsVisiveis : [])}
+                aria-label="Selecionar todas as sugestões"
+              />
+              {marcados.length > 0 ? `${marcados.length} selecionada(s)` : "Selecionar todas"}
+            </label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={marcados.length === 0 || mutacaoLote.isPending}
+              onClick={() => mutacaoLote.mutate(marcados)}
+            >
+              <Check size={14} />
+              {mutacaoLote.isPending ? "Aprovando…" : "Aprovar selecionados"}
+            </Button>
+          </div>
+        )}
+
         <ul className="space-y-3">
           {lista.map((s) => {
-            const emAndamento = mutacao.isPending && mutacao.variables?.sugestaoId === s.id;
+            const emAndamento =
+              (mutacao.isPending && mutacao.variables?.sugestaoId === s.id) ||
+              (mutacaoLote.isPending && marcados.includes(s.id));
             return (
               <li key={s.id} className="rounded-lg border border-border p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-                      {s.tipo_sugestao === "fonte" ? "Fonte nova" : "Título"}
-                    </span>
-                    <p className="mt-2 font-serif text-base leading-tight">
-                      {String(s.payload["titulo"] ?? s.payload["nome"] ?? "Sem nome")}
-                    </p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      className="mt-1"
+                      checked={marcados.includes(s.id)}
+                      onCheckedChange={(valor) => alternar(s.id, valor === true)}
+                      aria-label={`Selecionar sugestão ${String(s.payload["titulo"] ?? s.payload["nome"] ?? "")}`}
+                    />
+                    <div>
+                      <span className="rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {s.tipo_sugestao === "fonte" ? "Fonte nova" : "Título"}
+                      </span>
+                      <p className="mt-2 font-serif text-base leading-tight">
+                        {String(s.payload["titulo"] ?? s.payload["nome"] ?? "Sem nome")}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
 
                 <div className="mt-3 space-y-1">
                   {Object.entries(s.payload)
