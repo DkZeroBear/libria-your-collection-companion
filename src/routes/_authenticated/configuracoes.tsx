@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const BOT_USERNAME =
   (import.meta.env["VITE_TELEGRAM_BOT_USERNAME"] as string | undefined) ??
-  "LibriaBot";
+  "LibriaAppBot";
 
 interface PerfilTelegram {
   nome_exibicao: string;
