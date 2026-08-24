@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { buscarPorIsbn as buscarIsbnFn } from "@/lib/isbn.functions";
 import { LoteTitulos } from "@/components/sugerir/lote-titulos";
+import { LoteFontes } from "@/components/sugerir/lote-fontes";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -248,39 +249,47 @@ function SugerirPage() {
           ))}
         </div>
 
-        {modo === "titulo" && (
-          <div className="inline-flex rounded-lg border border-border p-1">
-            {(
-              [
-                { valor: false, rotulo: "Individual" },
-                { valor: true, rotulo: "Em lote" },
-              ] as const
-            ).map((opcao) => (
-              <button
-                key={String(opcao.valor)}
-                type="button"
-                onClick={() => setEmLote(opcao.valor)}
-                className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
-                  emLote === opcao.valor
-                    ? "border border-primary text-primary"
-                    : "border border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {opcao.rotulo}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="inline-flex rounded-lg border border-border p-1">
+          {(
+            [
+              { valor: false, rotulo: "Individual" },
+              { valor: true, rotulo: "Em lote" },
+            ] as const
+          ).map((opcao) => (
+            <button
+              key={String(opcao.valor)}
+              type="button"
+              onClick={() => setEmLote(opcao.valor)}
+              className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
+                emLote === opcao.valor
+                  ? "border border-primary text-primary"
+                  : "border border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {opcao.rotulo}
+            </button>
+          ))}
+        </div>
 
-        {modo === "titulo" && emLote ? (
-          <LoteTitulos
-            tipos={data.tipos}
-            fontes={data.fontes}
-            usuarioId={user.id}
-            onConcluir={() =>
-              navigate({ to: "/inicio", search: { visao: "colecoes", filtro: "todos" } })
-            }
-          />
+        {emLote ? (
+          modo === "titulo" ? (
+            <LoteTitulos
+              tipos={data.tipos}
+              fontes={data.fontes}
+              usuarioId={user.id}
+              onConcluir={() =>
+                navigate({ to: "/inicio", search: { visao: "colecoes", filtro: "todos" } })
+              }
+            />
+          ) : (
+            <LoteFontes
+              tipos={data.tipos}
+              usuarioId={user.id}
+              onConcluir={() =>
+                navigate({ to: "/inicio", search: { visao: "colecoes", filtro: "todos" } })
+              }
+            />
+          )
         ) : (
           <form onSubmit={enviar} className="space-y-4">
             {modo === "titulo" ? (
