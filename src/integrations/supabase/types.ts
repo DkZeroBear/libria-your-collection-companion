@@ -446,6 +446,7 @@ export type Database = {
           perfil_publico: boolean
           reputacao: number
           telegram_chat_id: string | null
+          telegram_codigo_vinculo: string
           username: string
         }
         Insert: {
@@ -458,6 +459,7 @@ export type Database = {
           perfil_publico?: boolean
           reputacao?: number
           telegram_chat_id?: string | null
+          telegram_codigo_vinculo?: string
           username: string
         }
         Update: {
@@ -470,6 +472,7 @@ export type Database = {
           perfil_publico?: boolean
           reputacao?: number
           telegram_chat_id?: string | null
+          telegram_codigo_vinculo?: string
           username?: string
         }
         Relationships: []
