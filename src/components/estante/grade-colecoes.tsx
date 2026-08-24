@@ -15,18 +15,13 @@ export function GradeColecoes({
 }) {
   return (
     <section className="space-y-10">
-      {grupos.length === 0 && (
-        <EstadoVazio mensagem="Nenhum título aprovado no catálogo ainda." />
-      )}
+      {grupos.length === 0 && <EstadoVazio mensagem="Nenhum título aprovado no catálogo ainda." />}
       {grupos.map((grupo) => {
         // Categoria aberta por padrão: só coleções com total oficial
         // declarado exibem completude.
-        const fechada =
-          typeof grupo.totalOficial === "number" && grupo.totalOficial > 0;
+        const fechada = typeof grupo.totalOficial === "number" && grupo.totalOficial > 0;
         const total = fechada ? grupo.totalOficial! : grupo.itens.length;
-        const tenho = grupo.itens.filter(
-          (t) => posseMap.get(t.id)?.tenho,
-        ).length;
+        const tenho = grupo.itens.filter((t) => posseMap.get(t.id)?.tenho).length;
         const pct = total > 0 ? Math.round((tenho / total) * 100) : 0;
         return (
           <div key={grupo.nome}>
@@ -53,10 +48,7 @@ export function GradeColecoes({
                 aria-valuemax={100}
                 aria-label={`Completude de ${grupo.nome}`}
               >
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${pct}%` }}
-                />
+                <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
               </div>
             )}
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">

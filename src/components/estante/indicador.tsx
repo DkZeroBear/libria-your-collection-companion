@@ -13,9 +13,7 @@ export function Indicador({
     <span
       className={cn(
         "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px]",
-        ativo
-          ? "border-primary text-primary"
-          : "border-border text-muted-foreground",
+        ativo ? "border-primary text-primary" : "border-border text-muted-foreground",
       )}
     >
       {icone}

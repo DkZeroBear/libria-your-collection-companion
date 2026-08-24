@@ -31,12 +31,8 @@ export function TituloCard({
         </div>
       )}
       <div className="min-w-0">
-        <h3 className="truncate text-sm font-medium leading-snug">
-          {titulo.titulo}
-        </h3>
-        {autor && (
-          <p className="truncate text-xs text-muted-foreground">{autor}</p>
-        )}
+        <h3 className="truncate text-sm font-medium leading-snug">{titulo.titulo}</h3>
+        {autor && <p className="truncate text-xs text-muted-foreground">{autor}</p>}
       </div>
       <div className="mt-auto flex flex-wrap gap-1.5">
         <Indicador

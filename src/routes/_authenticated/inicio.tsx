@@ -5,10 +5,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureUsuario } from "@/lib/ensure-usuario";
 import { FeedbackDialog } from "@/components/feedback-dialog";
-import {
-  EmprestimosBloco,
-  type EmprestimoAtivo,
-} from "@/components/emprestimos-bloco";
+import { EmprestimosBloco, type EmprestimoAtivo } from "@/components/emprestimos-bloco";
 import { CabecalhoEstante } from "@/components/estante/cabecalho-estante";
 import { GradeColecoes } from "@/components/estante/grade-colecoes";
 import { GradeTudo } from "@/components/estante/grade-tudo";
@@ -26,15 +23,10 @@ async function fetchColecao(usuarioId: string): Promise<ColecaoDados> {
   const [titulosRes, possesRes, emprestimosRes] = await Promise.all([
     supabase
       .from("titulos")
-      .select(
-        "id, titulo, capa_url, metadados, fonte_id, fontes(id, nome, total_titulos_oficial)",
-      )
+      .select("id, titulo, capa_url, metadados, fonte_id, fontes(id, nome, total_titulos_oficial)")
       .eq("status_curadoria", "aprovado")
       .order("titulo"),
-    supabase
-      .from("posse")
-      .select("titulo_id, tenho, lido, quero")
-      .eq("usuario_id", usuarioId),
+    supabase.from("posse").select("titulo_id, tenho, lido, quero").eq("usuario_id", usuarioId),
     supabase
       .from("emprestimos")
       .select(
@@ -64,13 +56,9 @@ const colecaoQueryOptions = (usuarioId: string) =>
 export const Route = createFileRoute("/_authenticated/inicio")({
   validateSearch: (search: Record<string, unknown>) => ({
     visao: (search["visao"] === "tudo" ? "tudo" : "colecoes") as Visao,
-    filtro: (
-      ["todos", "tenho", "faltam", "lidos", "quero"].includes(
-        String(search["filtro"]),
-      )
-        ? String(search["filtro"])
-        : "todos"
-    ) as Filtro,
+    filtro: (["todos", "tenho", "faltam", "lidos", "quero"].includes(String(search["filtro"]))
+      ? String(search["filtro"])
+      : "todos") as Filtro,
   }),
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(colecaoQueryOptions(context.user.id)),
@@ -79,8 +67,7 @@ export const Route = createFileRoute("/_authenticated/inicio")({
       { title: "Minha coleção — Libria" },
       {
         name: "description",
-        content:
-          "Sua coleção no Libria: posse, leitura, completude por coleção e empréstimos.",
+        content: "Sua coleção no Libria: posse, leitura, completude por coleção e empréstimos.",
       },
     ],
   }),
@@ -106,10 +93,7 @@ function InicioPage() {
   });
   const { data } = useSuspenseQuery(colecaoQueryOptions(user.id));
 
-  const posseMap = useMemo(
-    () => new Map(data.posses.map((p) => [p.titulo_id, p])),
-    [data.posses],
-  );
+  const posseMap = useMemo(() => new Map(data.posses.map((p) => [p.titulo_id, p])), [data.posses]);
 
   const stats = useMemo(
     () => ({
@@ -177,20 +161,12 @@ function InicioPage() {
 
   return (
     <main className="min-h-[100dvh] bg-background pb-24">
-      <CabecalhoEstante
-        perfil={perfil}
-        saindo={saindo}
-        onSignOut={handleSignOut}
-      />
+      <CabecalhoEstante perfil={perfil} saindo={saindo} onSignOut={handleSignOut} />
 
       <div className="mx-auto max-w-2xl space-y-8 px-4 pt-6">
         <section>
-          <h1 className="font-serif text-2xl leading-tight">
-            Minha estante
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            @{perfil.username}
-          </p>
+          <h1 className="font-serif text-2xl leading-tight">Minha estante</h1>
+          <p className="mt-1 text-sm text-muted-foreground">@{perfil.username}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <StatChip rotulo={`${stats.tenho} na estante`} />
             <StatChip rotulo={`${stats.lidos} lidos`} />
@@ -218,17 +194,12 @@ function InicioPage() {
           />
         )}
 
-        <EmprestimosBloco
-          emprestimos={data.emprestimos}
-          onMudanca={recarregar}
-        />
+        <EmprestimosBloco emprestimos={data.emprestimos} onMudanca={recarregar} />
       </div>
 
       <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-2.5">
-          <span className="text-[11px] text-muted-foreground">
-            Libria — acervo pessoal
-          </span>
+          <span className="text-[11px] text-muted-foreground">Libria — acervo pessoal</span>
           <FeedbackDialog usuarioId={user.id} />
         </div>
       </footer>
