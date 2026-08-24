@@ -119,6 +119,7 @@ export function EmprestimosBloco({
         <ul className="mt-3 space-y-2">
           {emprestimos.map((e) => {
             const dias = diasDesde(e.data_emprestimo);
+            const bloqueadoAte = proximaCobranca(e);
             return (
               <li
                 key={e.id}
