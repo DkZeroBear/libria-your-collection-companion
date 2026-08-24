@@ -3,12 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
 export type ValorPayloadServer =
-  | string
-  | number
-  | boolean
-  | null
-  | ValorPayloadServer[]
-  | { [chave: string]: ValorPayloadServer };
+  string | number | boolean | null | ValorPayloadServer[] | { [chave: string]: ValorPayloadServer };
 
 function texto(valor: unknown): string | null {
   if (typeof valor !== "string") return null;

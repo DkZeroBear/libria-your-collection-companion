@@ -15,7 +15,6 @@ import { useEhModerador } from "@/lib/use-moderador";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 export const Route = createFileRoute("/_authenticated/curadoria")({
   head: () => ({
     meta: [
@@ -116,7 +115,6 @@ function CuradoriaPage() {
     onError: (erro: Error) => toast.error(erro.message || "Não foi possível aprovar em lote."),
   });
 
-
   // Sem papel de moderador: avisa e devolve para a estante.
   if (!ehModerador) {
     if (!checou) {
@@ -143,7 +141,6 @@ function CuradoriaPage() {
     setSelecionados((atual) =>
       marcado ? [...new Set([...atual, id])] : atual.filter((x) => x !== id),
     );
-
 
   return (
     <main className="min-h-[100dvh] bg-background pb-16">
@@ -225,7 +222,6 @@ function CuradoriaPage() {
                     </div>
                   </div>
                 </div>
-
 
                 <div className="mt-3 space-y-1">
                   {Object.entries(s.payload)
