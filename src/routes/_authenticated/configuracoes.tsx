@@ -20,15 +20,32 @@ const perfilQueryOptions = (usuarioId: string) =>
   queryOptions({
     queryKey: ["perfil-telegram", usuarioId],
     queryFn: async (): Promise<PerfilTelegram> => {
-      const { data, error } = await supabase
+      const { data: perfil, error: erroPerfil } = await supabase
         .from("usuarios")
-        .select("nome_exibicao, telegram_chat_id, telegram_codigo_vinculo")
+        .select("nome_exibicao")
         .eq("id", usuarioId)
         .single();
-      if (error) throw error;
-      return data;
+      if (erroPerfil) throw erroPerfil;
+
+      const { data: tg, error: erroTg } = await supabase
+        .from("usuarios_telegram")
+        .select("telegram_chat_id, telegram_codigo_vinculo")
+        .eq("usuario_id", usuarioId)
+        .maybeSingle();
+      if (erroTg) throw erroTg;
+
+      if (tg) return { nome_exibicao: perfil.nome_exibicao, ...tg };
+
+      const { data: criado, error: erroCriar } = await supabase
+        .from("usuarios_telegram")
+        .insert({ usuario_id: usuarioId })
+        .select("telegram_chat_id, telegram_codigo_vinculo")
+        .single();
+      if (erroCriar) throw erroCriar;
+      return { nome_exibicao: perfil.nome_exibicao, ...criado };
     },
   });
+
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   loader: ({ context }) =>
