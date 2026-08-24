@@ -196,12 +196,17 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
             origem: "busca" as const,
           };
         }
-        return { ...item, origem: (item.titulo ? "manual" : "nao_encontrado") as ItemLote["origem"] };
+        return {
+          ...item,
+          origem: (item.titulo ? "manual" : "nao_encontrado") as ItemLote["origem"],
+        };
       });
 
       setItens(processados);
       const achados = processados.filter((i) => i.origem === "busca").length;
-      toast.success(`${processados.length} linhas processadas · ${achados} preenchidas pela busca.`);
+      toast.success(
+        `${processados.length} linhas processadas · ${achados} preenchidas pela busca.`,
+      );
     } catch (erro) {
       console.error("[lote] processamento falhou", erro);
       toast.error("Não foi possível processar o lote. Tente novamente.");
@@ -378,9 +383,7 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
                   <th className="px-2 py-2 font-normal">Origem</th>
                   <th className="px-2 py-2 font-normal">Título</th>
                   <th className="px-2 py-2 font-normal">{ehJogo ? "Plataforma" : "Autor"}</th>
-                  <th className="px-2 py-2 font-normal">
-                    {ehJogo ? "Desenvolvedora" : "Editora"}
-                  </th>
+                  <th className="px-2 py-2 font-normal">{ehJogo ? "Desenvolvedora" : "Editora"}</th>
                   <th className="px-2 py-2 font-normal">Ano</th>
                   <th className="px-2 py-2 font-normal sr-only">Ações</th>
                 </tr>
@@ -443,9 +446,7 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
                         type="button"
                         aria-label={`Remover ${item.titulo || "linha"}`}
                         onClick={() =>
-                          setItens((atuais) =>
-                            (atuais ?? []).filter((i) => i.chave !== item.chave),
-                          )
+                          setItens((atuais) => (atuais ?? []).filter((i) => i.chave !== item.chave))
                         }
                         className="text-muted-foreground transition-colors hover:text-destructive"
                       >
@@ -458,7 +459,12 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
             </table>
           </div>
 
-          <Button type="button" className="w-full" disabled={enviando} onClick={() => void enviar()}>
+          <Button
+            type="button"
+            className="w-full"
+            disabled={enviando}
+            onClick={() => void enviar()}
+          >
             {enviando
               ? "Enviando…"
               : `Enviar ${itens.filter((i) => i.titulo.trim()).length} sugestões`}
