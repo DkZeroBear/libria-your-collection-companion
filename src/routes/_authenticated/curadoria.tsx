@@ -64,9 +64,11 @@ function CuradoriaPage() {
   const { user } = Route.useRouteContext();
   const ehModerador = useEhModerador(user.id);
   const [checou, setChecou] = useState(false);
+  const [selecionados, setSelecionados] = useState<string[]>([]);
 
   const listar = useServerFn(listarSugestoesPendentes);
   const revisar = useServerFn(revisarSugestao);
+  const aprovarLote = useServerFn(aprovarSugestoesEmLote);
 
   const { data: sugestoes, isLoading } = useQuery({
     queryKey: ["sugestoes-pendentes"],
@@ -74,21 +76,46 @@ function CuradoriaPage() {
     enabled: ehModerador,
   });
 
+  const invalidar = () => {
+    void queryClient.invalidateQueries({ queryKey: ["sugestoes-pendentes"] });
+    void queryClient.invalidateQueries({ queryKey: ["colecao"] });
+    void queryClient.invalidateQueries({ queryKey: ["catalogo-sugestao"] });
+  };
+
   const mutacao = useMutation({
     mutationFn: (vars: { sugestaoId: string; acao: "aprovar" | "rejeitar" }) =>
       revisar({ data: vars }),
-    onSuccess: (resultado) => {
+    onSuccess: (resultado, vars) => {
       toast.success(
         resultado.status === "aprovado"
           ? "Sugestão aprovada e publicada no acervo."
           : "Sugestão rejeitada.",
       );
-      void queryClient.invalidateQueries({ queryKey: ["sugestoes-pendentes"] });
-      void queryClient.invalidateQueries({ queryKey: ["colecao"] });
-      void queryClient.invalidateQueries({ queryKey: ["catalogo-sugestao"] });
+      setSelecionados((atual) => atual.filter((id) => id !== vars.sugestaoId));
+      invalidar();
     },
     onError: (erro: Error) => toast.error(erro.message || "Não foi possível revisar a sugestão."),
   });
+
+  const mutacaoLote = useMutation({
+    mutationFn: (ids: string[]) => aprovarLote({ data: { sugestaoIds: ids } }),
+    onSuccess: (resultado) => {
+      if (resultado.aprovadas > 0) {
+        toast.success(
+          `${resultado.aprovadas} ${resultado.aprovadas === 1 ? "sugestão aprovada" : "sugestões aprovadas"}.`,
+        );
+      }
+      if (resultado.falhas.length > 0) {
+        toast.error(
+          `${resultado.falhas.length} não puderam ser aprovadas: ${resultado.falhas[0]?.erro ?? ""}`,
+        );
+      }
+      setSelecionados([]);
+      invalidar();
+    },
+    onError: (erro: Error) => toast.error(erro.message || "Não foi possível aprovar em lote."),
+  });
+
 
   // Sem papel de moderador: avisa e devolve para a estante.
   if (!ehModerador) {
