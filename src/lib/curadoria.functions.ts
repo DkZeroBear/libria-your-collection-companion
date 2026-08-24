@@ -2,10 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type ValorPayload =
+  | string
+  | number
+  | boolean
+  | null
+  | ValorPayload[]
+  | { [chave: string]: ValorPayload };
+
 export interface SugestaoPendente {
   id: string;
   tipo_sugestao: string;
-  payload: Record<string, unknown>;
+  payload: Record<string, ValorPayload>;
   created_at: string;
   sugerido_por: string;
   sugerido_por_nome: string | null;
@@ -49,7 +57,7 @@ export const listarSugestoesPendentes = createServerFn({ method: "GET" })
     return linhas.map((s) => ({
       id: s.id,
       tipo_sugestao: s.tipo_sugestao,
-      payload: (s.payload ?? {}) as Record<string, unknown>,
+      payload: (s.payload ?? {}) as Record<string, ValorPayload>,
       created_at: s.created_at,
       sugerido_por: s.sugerido_por,
       sugerido_por_nome: perfis.get(s.sugerido_por)?.nome_exibicao ?? null,
@@ -94,7 +102,7 @@ export const revisarSugestao = createServerFn({ method: "POST" })
     if (sugestao.status !== "pendente") throw new Error("Esta sugestão já foi revisada.");
 
     const novoStatus = data.acao === "aprovar" ? "aprovado" : "rejeitado";
-    const payload = (sugestao.payload ?? {}) as Record<string, unknown>;
+    const payload = (sugestao.payload ?? {}) as Record<string, ValorPayload>;
 
     if (data.acao === "aprovar") {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
