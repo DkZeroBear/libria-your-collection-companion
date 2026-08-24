@@ -515,8 +515,6 @@ export type Database = {
           nome_exibicao: string
           perfil_publico: boolean
           reputacao: number
-          telegram_chat_id: string | null
-          telegram_codigo_vinculo: string
           username: string
         }
         Insert: {
@@ -528,8 +526,6 @@ export type Database = {
           nome_exibicao: string
           perfil_publico?: boolean
           reputacao?: number
-          telegram_chat_id?: string | null
-          telegram_codigo_vinculo?: string
           username: string
         }
         Update: {
@@ -541,11 +537,48 @@ export type Database = {
           nome_exibicao?: string
           perfil_publico?: boolean
           reputacao?: number
-          telegram_chat_id?: string | null
-          telegram_codigo_vinculo?: string
           username?: string
         }
         Relationships: []
+      }
+      usuarios_telegram: {
+        Row: {
+          created_at: string
+          telegram_chat_id: string | null
+          telegram_codigo_vinculo: string
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          created_at?: string
+          telegram_chat_id?: string | null
+          telegram_codigo_vinculo?: string
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          created_at?: string
+          telegram_chat_id?: string | null
+          telegram_codigo_vinculo?: string
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usuarios_telegram_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usuarios_telegram_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios_publico"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -587,13 +620,6 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
-      }
-      meu_codigo_telegram: {
-        Args: never
-        Returns: {
-          telegram_chat_id: string
-          telegram_codigo_vinculo: string
-        }[]
       }
     }
     Enums: {
