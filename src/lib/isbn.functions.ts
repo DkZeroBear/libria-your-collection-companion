@@ -6,10 +6,10 @@ export type ResultadoIsbn = {
   fonte?: "google_books" | "open_library";
   erro?: string;
   dados?: {
-    titulo?: string;
-    autor?: string;
-    editora?: string;
-    ano?: string;
+    titulo?: string | undefined;
+    autor?: string | undefined;
+    editora?: string | undefined;
+    ano?: string | undefined;
   };
 };
 
