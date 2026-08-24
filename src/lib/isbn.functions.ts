@@ -89,9 +89,7 @@ export const buscarPorIsbn = createServerFn({ method: "POST" })
   .inputValidator((data) =>
     z
       .object({
-        isbn: z
-          .string()
-          .transform((v) => v.replace(/[^0-9Xx]/g, "").toUpperCase()),
+        isbn: z.string().transform((v) => v.replace(/[^0-9Xx]/g, "").toUpperCase()),
       })
       .parse(data),
   )

@@ -117,9 +117,7 @@ function SugerirPage() {
     try {
       const resultado = await buscarIsbnFn({ data: { isbn: limpo } });
       if (!resultado.encontrado || !resultado.dados) {
-        toast.info(
-          resultado.erro ?? "ISBN não encontrado. Preencha manualmente.",
-        );
+        toast.info(resultado.erro ?? "ISBN não encontrado. Preencha manualmente.");
         return;
       }
       const { titulo: t, autor: a, editora: e, ano: y } = resultado.dados;
@@ -139,7 +137,6 @@ function SugerirPage() {
       setBuscandoIsbn(false);
     }
   }
-
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault();
