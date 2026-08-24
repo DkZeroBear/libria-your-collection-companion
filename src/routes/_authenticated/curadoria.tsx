@@ -136,6 +136,14 @@ function CuradoriaPage() {
   }
 
   const lista: SugestaoPendente[] = sugestoes ?? [];
+  const idsVisiveis = lista.map((s) => s.id);
+  const marcados = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosMarcados = lista.length > 0 && marcados.length === lista.length;
+  const alternar = (id: string, marcado: boolean) =>
+    setSelecionados((atual) =>
+      marcado ? [...new Set([...atual, id])] : atual.filter((x) => x !== id),
+    );
+
 
   return (
     <main className="min-h-[100dvh] bg-background pb-16">
