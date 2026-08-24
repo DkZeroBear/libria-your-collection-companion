@@ -118,3 +118,39 @@ export const buscarPorIsbn = createServerFn({ method: "POST" })
       erro: "Nenhum catálogo retornou dados para este ISBN.",
     };
   });
+
+async function resolverIsbn(bruto: string): Promise<ResultadoIsbn> {
+  const isbn = bruto.replace(/[^0-9Xx]/g, "").toUpperCase();
+  if (isbn.length !== 10 && isbn.length !== 13) {
+    return { encontrado: false, erro: "ISBN deve ter 10 ou 13 dígitos." };
+  }
+  try {
+    const google = await buscarGoogleBooks(isbn);
+    if (google) return google;
+  } catch (erro) {
+    console.error("[isbn] google books falhou", erro);
+  }
+  try {
+    const openLibrary = await buscarOpenLibrary(isbn);
+    if (openLibrary) return openLibrary;
+  } catch (erro) {
+    console.error("[isbn] open library falhou", erro);
+  }
+  return { encontrado: false, erro: "Nenhum catálogo retornou dados para este ISBN." };
+}
+
+export const buscarPorIsbnLote = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ isbns: z.array(z.string()).max(200) }).parse(data))
+  .handler(async ({ data }): Promise<Record<string, ResultadoIsbn>> => {
+    const unicos = Array.from(new Set(data.isbns.map((v) => v.trim()).filter(Boolean)));
+    const saida: Record<string, ResultadoIsbn> = {};
+    const tamanhoLote = 5;
+    for (let i = 0; i < unicos.length; i += tamanhoLote) {
+      const fatia = unicos.slice(i, i + tamanhoLote);
+      const resultados = await Promise.all(fatia.map((isbn) => resolverIsbn(isbn)));
+      fatia.forEach((isbn, indice) => {
+        saida[isbn] = resultados[indice]!;
+      });
+    }
+    return saida;
+  });
