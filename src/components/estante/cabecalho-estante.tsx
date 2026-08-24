@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Gear, SignOut } from "@phosphor-icons/react";
 
-import { supabase } from "@/integrations/supabase/client";
 import type { UsuarioPerfil } from "@/lib/ensure-usuario";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,6 +56,3 @@ export function CabecalhoEstante({
     </header>
   );
 }
-
-// Evita tree-shaking remover o import usado apenas para o tipo em alguns bundlers.
-void supabase;
