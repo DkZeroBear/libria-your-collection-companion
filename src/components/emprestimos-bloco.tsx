@@ -30,6 +30,27 @@ export function EmprestimosBloco({
 }) {
   const cobrar = useServerFn(cobrarEmprestimo);
   const [ocupado, setOcupado] = useState<string | null>(null);
+  const [bloqueios, setBloqueios] = useState<Record<string, string>>({});
+
+  function formatarHora(iso: string) {
+    return new Date(iso).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function proximaCobranca(e: EmprestimoAtivo): string | null {
+    const doEstado = bloqueios[e.id];
+    if (doEstado && new Date(doEstado).getTime() > Date.now()) return doEstado;
+    if (e.ultima_cobranca_em) {
+      const proxima =
+        new Date(e.ultima_cobranca_em).getTime() + 4 * 60 * 60 * 1000;
+      if (proxima > Date.now()) return new Date(proxima).toISOString();
+    }
+    return null;
+  }
 
   async function marcarDevolvido(id: string) {
     setOcupado(id);
