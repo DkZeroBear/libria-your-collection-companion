@@ -30,6 +30,27 @@ export function EmprestimosBloco({
 }) {
   const cobrar = useServerFn(cobrarEmprestimo);
   const [ocupado, setOcupado] = useState<string | null>(null);
+  const [bloqueios, setBloqueios] = useState<Record<string, string>>({});
+
+  function formatarHora(iso: string) {
+    return new Date(iso).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function proximaCobranca(e: EmprestimoAtivo): string | null {
+    const doEstado = bloqueios[e.id];
+    if (doEstado && new Date(doEstado).getTime() > Date.now()) return doEstado;
+    if (e.ultima_cobranca_em) {
+      const proxima =
+        new Date(e.ultima_cobranca_em).getTime() + 4 * 60 * 60 * 1000;
+      if (proxima > Date.now()) return new Date(proxima).toISOString();
+    }
+    return null;
+  }
 
   async function marcarDevolvido(id: string) {
     setOcupado(id);
@@ -56,6 +77,13 @@ export function EmprestimosBloco({
       if (resultado.status === "sem_telegram") {
         toast.info(
           "Conecte seu Telegram em Configurações para receber os lembretes.",
+        );
+        return;
+      }
+      if (resultado.status === "aguarde") {
+        setBloqueios((b) => ({ ...b, [id]: resultado.proximaCobrancaEm }));
+        toast.info(
+          `Você já cobrou há pouco. Próxima cobrança a partir de ${formatarHora(resultado.proximaCobrancaEm)}.`,
         );
         return;
       }
@@ -91,6 +119,7 @@ export function EmprestimosBloco({
         <ul className="mt-3 space-y-2">
           {emprestimos.map((e) => {
             const dias = diasDesde(e.data_emprestimo);
+            const bloqueadoAte = proximaCobranca(e);
             return (
               <li
                 key={e.id}
@@ -123,12 +152,19 @@ export function EmprestimosBloco({
                   </button>
                   <button
                     type="button"
-                    disabled={ocupado === e.id}
+                    disabled={ocupado === e.id || bloqueadoAte !== null}
+                    title={
+                      bloqueadoAte
+                        ? `Próxima cobrança a partir de ${formatarHora(bloqueadoAte)}`
+                        : undefined
+                    }
                     onClick={() => handleCobrar(e.id)}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
                   >
                     <BellRinging size={14} />
-                    Cobrar
+                    {bloqueadoAte
+                      ? `Cobrar a partir de ${formatarHora(bloqueadoAte)}`
+                      : "Cobrar"}
                   </button>
                 </div>
               </li>
