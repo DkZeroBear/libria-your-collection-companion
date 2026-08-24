@@ -257,7 +257,7 @@ function InicioPage() {
       <div className="mx-auto max-w-2xl space-y-8 px-4 pt-6">
         <section>
           <h1 className="font-serif text-2xl leading-tight">
-            Acervo de {perfil.nome_exibicao}
+            Minha estante
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             @{perfil.username}
