@@ -158,11 +158,15 @@ function InicioPage() {
   );
 
   const grupos = useMemo(() => {
-    const mapa = new Map<string, { nome: string; itens: TituloColecao[] }>();
+    const mapa = new Map<
+      string,
+      { nome: string; totalOficial: number | null; itens: TituloColecao[] }
+    >();
     for (const t of data.titulos) {
       const chave = t.fontes?.id ?? "avulsos";
       const grupo = mapa.get(chave) ?? {
         nome: t.fontes?.nome ?? "Avulsos",
+        totalOficial: t.fontes?.total_titulos_oficial ?? null,
         itens: [],
       };
       grupo.itens.push(t);
