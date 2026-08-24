@@ -442,7 +442,9 @@ function SugerirPage() {
           <Button type="submit" className="w-full" disabled={enviando}>
             {enviando ? "Enviando…" : "Enviar para curadoria"}
           </Button>
-        </form>
+          </form>
+        )}
+
       </div>
     </main>
   );
