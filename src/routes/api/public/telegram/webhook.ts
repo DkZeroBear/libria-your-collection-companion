@@ -72,10 +72,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         );
 
         const { data, error } = await supabaseAdmin
-          .from("usuarios")
+          .from("usuarios_telegram")
           .update({ telegram_chat_id: String(chatId) })
           .eq("telegram_codigo_vinculo", codigo)
-          .select("nome_exibicao")
+          .select("usuario_id, usuarios(nome_exibicao)")
           .maybeSingle();
 
         if (error) {
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         await responder(
           chatId,
-          `Pronto, ${data.nome_exibicao}! Sua conta do Libria está conectada. Você vai receber aqui os lembretes de empréstimo.`,
+          `Pronto, ${(data.usuarios as unknown as { nome_exibicao: string } | null)?.nome_exibicao ?? "colecionador"}! Sua conta do Libria está conectada. Você vai receber aqui os lembretes de empréstimo.`,
         );
         return Response.json({ ok: true });
       },

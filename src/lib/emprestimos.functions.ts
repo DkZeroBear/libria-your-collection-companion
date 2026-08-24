@@ -34,9 +34,9 @@ export const cobrarEmprestimo = createServerFn({ method: "POST" })
     if (emprestimo.devolvido) throw new Error("Este empréstimo já foi devolvido.");
 
     const { data: perfil, error: erroPerfil } = await supabase
-      .from("usuarios")
+      .from("usuarios_telegram")
       .select("telegram_chat_id")
-      .eq("id", userId)
+      .eq("usuario_id", userId)
       .maybeSingle();
 
     if (erroPerfil) throw erroPerfil;
