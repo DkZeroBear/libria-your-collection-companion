@@ -152,12 +152,19 @@ export function EmprestimosBloco({
                   </button>
                   <button
                     type="button"
-                    disabled={ocupado === e.id}
+                    disabled={ocupado === e.id || bloqueadoAte !== null}
+                    title={
+                      bloqueadoAte
+                        ? `Próxima cobrança a partir de ${formatarHora(bloqueadoAte)}`
+                        : undefined
+                    }
                     onClick={() => handleCobrar(e.id)}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
                   >
                     <BellRinging size={14} />
-                    Cobrar
+                    {bloqueadoAte
+                      ? `Cobrar a partir de ${formatarHora(bloqueadoAte)}`
+                      : "Cobrar"}
                   </button>
                 </div>
               </li>
