@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedCuradoriaRouteImport } from './routes/_authenticated/curadoria'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedSugerirRouteImport } from './routes/_authenticated/sugerir'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
@@ -37,6 +38,11 @@ const AuthenticatedConfiguracoesRoute =
     path: '/configuracoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCuradoriaRoute = AuthenticatedCuradoriaRouteImport.update({
+  id: '/curadoria',
+  path: '/curadoria',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/curadoria': typeof AuthenticatedCuradoriaRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/curadoria': typeof AuthenticatedCuradoriaRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/curadoria': typeof AuthenticatedCuradoriaRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/sugerir': typeof AuthenticatedSugerirRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/configuracoes'
+    | '/curadoria'
     | '/inicio'
     | '/sugerir'
     | '/api/public/telegram/webhook'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/configuracoes'
+    | '/curadoria'
     | '/inicio'
     | '/sugerir'
     | '/api/public/telegram/webhook'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/configuracoes'
+    | '/_authenticated/curadoria'
     | '/_authenticated/inicio'
     | '/_authenticated/sugerir'
     | '/api/public/telegram/webhook'
@@ -145,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/curadoria': {
+      id: '/_authenticated/curadoria'
+      path: '/curadoria'
+      fullPath: '/curadoria'
+      preLoaderRoute: typeof AuthenticatedCuradoriaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/inicio': {
       id: '/_authenticated/inicio'
       path: '/inicio'
@@ -171,12 +190,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedCuradoriaRoute: typeof AuthenticatedCuradoriaRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedSugerirRoute: typeof AuthenticatedSugerirRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedCuradoriaRoute: AuthenticatedCuradoriaRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedSugerirRoute: AuthenticatedSugerirRoute,
 }

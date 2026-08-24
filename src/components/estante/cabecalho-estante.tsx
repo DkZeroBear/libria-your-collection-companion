@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Gear, Plus, SignOut } from "@phosphor-icons/react";
+import { Gear, Plus, ShieldCheck, SignOut } from "@phosphor-icons/react";
 
 import type { UsuarioPerfil } from "@/lib/ensure-usuario";
+import { useEhModerador } from "@/lib/use-moderador";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -14,6 +15,7 @@ export function CabecalhoEstante({
   saindo: boolean;
   onSignOut: () => void;
 }) {
+  const ehModerador = useEhModerador(perfil.id);
   const iniciais = perfil.nome_exibicao
     .split(" ")
     .map((parte) => parte[0])
@@ -34,6 +36,15 @@ export function CabecalhoEstante({
             <Plus size={14} />
             Sugerir item
           </Link>
+          {ehModerador && (
+            <Link
+              to="/curadoria"
+              aria-label="Curadoria"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              <ShieldCheck size={16} />
+            </Link>
+          )}
           <Link
             to="/configuracoes"
             aria-label="Configurações"
