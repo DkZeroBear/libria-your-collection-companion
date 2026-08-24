@@ -170,9 +170,12 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
     URL.revokeObjectURL(url);
   }
 
-  async function processar(brutos: ItemLote[]) {
+  async function processar(todos: ItemLote[]) {
+    // ISBN não é obrigatório: basta ter ISBN OU título. Só descartamos linhas sem os dois.
+    const brutos = todos.filter((i) => i.isbn.trim() || i.titulo.trim());
+    const descartadas = todos.length - brutos.length;
     if (brutos.length === 0) {
-      toast.error("Nenhuma linha válida encontrada.");
+      toast.error("Nenhuma linha válida: cada linha precisa de ISBN ou título.");
       return;
     }
     setProcessando(true);
@@ -205,7 +208,8 @@ export function LoteTitulos({ tipos, fontes, usuarioId, onConcluir }: Props) {
       setItens(processados);
       const achados = processados.filter((i) => i.origem === "busca").length;
       toast.success(
-        `${processados.length} linhas processadas · ${achados} preenchidas pela busca.`,
+        `${processados.length} linhas processadas · ${achados} preenchidas pela busca.` +
+          (descartadas > 0 ? ` ${descartadas} ignoradas (sem ISBN e sem título).` : ""),
       );
     } catch (erro) {
       console.error("[lote] processamento falhou", erro);
